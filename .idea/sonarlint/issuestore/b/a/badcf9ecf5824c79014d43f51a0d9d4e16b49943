@@ -1,0 +1,9 @@
+
+ipython:S1192P"QDefine a constant instead of duplicating this literal "Capital ahorrado" 6 times.(çÉ¸
+cpython:S1192-"FDefine a constant instead of duplicating this literal "g a b" 3 times.(˜‡Äıÿÿÿÿ
+^python:S1192."FDefine a constant instead of duplicating this literal "b a g" 4 times.(Ì’ğÎ
+npython:S1192N"QDefine a constant instead of duplicating this literal "Capital bancario" 8 times.(Ç¥Úãüÿÿÿÿ
+kpython:S1192O"NDefine a constant instead of duplicating this literal "Capital gasto" 7 times.(ö»Á•ùÿÿÿÿ
+Hpython:S1066š"/Merge this if statement with the enclosing one.(ÆÁ­ê
+epython:S1854¾"GRemove this assignment to local variable 'pr'; the value is never used.(¢†·†ÿÿÿÿÿ
+npython:S3776ƒ"URefactor this function to reduce its Cognitive Complexity from 144 to the 15 allowed.(šÙ‘
