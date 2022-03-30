@@ -301,21 +301,23 @@ class App:
         while self.k != 0 and self.k != 1:
             C = pd.concat([self.record.Concepto1, self.record.Concepto2, self.record.Concepto3]).to_numpy()
             G = pd.concat([self.record.Gastos1, self.record.Gastos2, self.record.Gastos3]).to_numpy()
-            SM = pd.DataFrame([], columns=["Gastos Totales", "Media de Gasto", "Desviación Típica", "Media Semanal"], index=np.unique(C))
+            SM = pd.DataFrame([], columns=["Gastos Totales", "Media de Gasto", "Desviación Típica", "Media Semanal", "Porcentaje del Total"], index=np.unique(C))
             for i in np.unique(C):
                 SM["Gastos Totales"].loc[i] = G[C == i].sum()
                 SM["Media de Gasto"].loc[i] = G[C == i].mean()
                 SM["Desviación Típica"].loc[i] = G[C == i].std()
                 SM["Media Semanal"].loc[i] = G[C == i].sum() / len(C)
+                SM["Porcentaje del Total"].loc[i] =  (G[C == i].sum() / G.sum()) * 100
             SM = SM[SM["Gastos Totales"] != 0.00]
             C1 = pd.concat([self.record.Concepto_1, self.record.Concepto_2]).to_numpy()
             I = pd.concat([self.record.Ingresos1, self.record.Ingresos2]).to_numpy()
-            SM1 = pd.DataFrame([], columns=["Ingresos Totales", "Media de Ingresos", "Desviación Típica", "Media Semanal"], index=np.unique(C1))
+            SM1 = pd.DataFrame([], columns=["Ingresos Totales", "Media de Ingresos", "Desviación Típica", "Media Semanal", "Porcentaje del Total"], index=np.unique(C1))
             for i in np.unique(C1):
                 SM1["Ingresos Totales"].loc[i] = I[C1 == i].sum()
                 SM1["Media de Ingresos"].loc[i] = I[C1 == i].mean()
                 SM1["Desviación Típica"].loc[i] = I[C1 == i].std()
                 SM1["Media Semanal"].loc[i] = I[C1 == i].sum() / len(C1)
+                SM1["Porcentaje del Total"].loc[i] =  (I[C1 == i].sum() / I.sum()) * 100
             SM1= SM1[SM1["Ingresos Totales"] != 0.00]           
             self.opciones(["Datos", "Gráfica"])
             self.k = input(self.o.rjust(round(self.width / 2) + 5, " "))
