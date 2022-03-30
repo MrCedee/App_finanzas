@@ -331,26 +331,38 @@ class App:
         while self.k != 0 and self.k != 1:
             GS = self.record.Gastos1 + self.record.Gastos2 + self.record.Gastos3
             IS = self.record.Ingresos1 + self.record.Ingresos2
+            BS = IS - GS
             os.system("cls")
             self.opciones(["Datos", "Gráfica"])
             self.k = input(self.o.rjust(round(self.width / 2) + 5, " "))
             os.system("cls")
             if self.k.lower() == "a":
-
                 df = pd.DataFrame([])
                 df["Gastos Totales"] = GS
                 df["Ingresos Totales"] = IS
+                df["Beneficios totales"] = BS
+                metrics = pd.DataFrame(columns=["Gastos", "Ingresos", "Beneficios"], index=["Total", "Media", "Desviación Típica"])
+                metrics["Gastos"].iloc[0] = GS.sum()
+                metrics["Ingresos"].iloc[0] = IS.sum()
+                metrics["Beneficios"].iloc[0] = BS.sum()
+                metrics["Gastos"].iloc[1] = GS.mean()
+                metrics["Ingresos"].iloc[1] = IS.mean()
+                metrics["Beneficios"].iloc[1] = BS.mean()
+                metrics["Gastos"].iloc[2] = GS.std()
+                metrics["Ingresos"].iloc[2] = IS.std()
+                metrics["Beneficios"].iloc[2] = BS.std()
                 print(tabulate(df, headers='keys', tablefmt='pretty'))
-                for _ in range(15):
+                print(tabulate(metrics, headers='keys', tablefmt='pretty'))
+                for _ in range(5):
                     print(self.e)
                 input(self.oli.rjust(round(self.width / 2) + 15))
             elif self.k == "b":
                 plt.plot(GS.index, GS, label="Gastos Totales")
                 plt.plot(IS.index, IS, label="Ingresos Totales")
+                plt.plot(BS.index, BS, label="Benficios Totales" )
                 plt.legend()
                 plt.grid()
                 plt.xticks(GS.index, rotation="vertical")
-
                 plt.show()
                 for _ in range(15):
                     print(self.e)
