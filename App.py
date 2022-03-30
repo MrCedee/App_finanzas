@@ -510,14 +510,16 @@ class App:
             crypt_capital.append(price * cnt * self.deur)
         self.patrimonio = pd.DataFrame(columns=crypto, index=["Cantidad", "Euros", "Dólares"])
         self.patrimonio.loc["Cantidad"] = cuantities
-        self.patrimonio.loc["Euros"] = crypt_capital
-        self.patrimonio.loc["Dólares"] = np.array(crypt_capital)/self.deur
+        self.patrimonio.loc["Euros"] = np.round(np.array(crypt_capital), 2)
+        self.patrimonio.loc["Dólares"] = np.round(np.array(crypt_capital)/self.deur, 2)
     
     def actual_patrimonio(self):
         insertion = [self.record["Capital gasto"].iloc[-1] + self.record["Capital bancario"].iloc[-1] + self.record["Capital ahorrado"].iloc[-1],0]
         insertion[1] = insertion[0]
-        insertion.append(insertion[0]/self.deur)
+        insertion.append(round(insertion[0]/self.deur, 2))
+        self.patrimonio["Cryptos"] = [1, round(self.patrimonio.loc["Euros"].sum(), 2), round(self.patrimonio.loc["Dólares"].sum(), 2)]
         self.patrimonio["Euros"] = insertion
+        self.patrimonio["Patrimonio"] = [1, self.patrimonio["Cryptos"].loc["Euros"] + self.patrimonio["Euros"].loc["Euros"] , self.patrimonio["Cryptos"].loc["Dólares"] + self.patrimonio["Euros"].loc["Dólares"]]
 
     def check_progress(self):
         os.system("cls")
