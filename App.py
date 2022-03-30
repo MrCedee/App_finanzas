@@ -7,6 +7,8 @@ import matplotlib.pyplot as plt
 import keyboard
 import requests
 from bs4 import BeautifulSoup
+import pickle 
+
 
 class App:
     def __init__(self):
@@ -27,7 +29,16 @@ class App:
         self.oli = "Press any button to go back "
         self.e = ""
         self.investment_data = ""
-        
+        self.options_data = ""
+        self.options_init()
+    
+    def options(self):
+        pass
+
+    def options_init(self):
+        with open("options.pkl", "rb") as op:
+            self.options_data = pickle.load(op)
+
     def rounddf(self):
         self.record["Capital bancario"] = self.record["Capital bancario"].round(2)
         self.record["Capital gasto"] = self.record["Capital gasto"].round(2)
@@ -371,9 +382,9 @@ class App:
             os.system("cls")
             if self.k.lower() == "a":
                 df = pd.DataFrame([])
-                df["Gastos Totales"] = GS
-                df["Ingresos Totales"] = IS
-                df["Beneficios totales"] = BS
+                df["Gastos Totales"] = GS.round(2)
+                df["Ingresos Totales"] = IS.round(2)
+                df["Beneficios totales"] = BS.round(2)
                 metrics = pd.DataFrame(columns=["Gastos", "Ingresos", "Beneficios"], index=["Total", "Media", "Desviación Típica"])
                 metrics["Gastos"].iloc[0] = round(GS.sum(), 2)
                 metrics["Ingresos"].iloc[0] = round(IS.sum(), 2)
@@ -412,6 +423,7 @@ class App:
             self.k = input(self.o.rjust(round(self.width / 2) + 5, " "))
             os.system("cls")
             j = self.record[["Capital bancario", "Capital gasto", "Capital ahorrado"]]
+            j["Capital Disponible"] = j["Capital bancario"] + j["Capital gasto"]
             if self.k.lower() == "a":
                 print(tabulate(pd.DataFrame(j), headers='keys', tablefmt='pretty'))
                 for i in range(15):
@@ -455,7 +467,7 @@ class App:
     def main_page(self):
         self.init_crypto()
         self.p_title()
-        self.opciones(["Ver Estado", "Agregar Datos", "Obtener Métricas"], 7, False)
+        self.opciones(["Ver Estado", "Agregar Datos", "Obtener Métricas", "Configuración"], 7, False)
         self.k = input(self.o.rjust(round(self.width / 2) + 5, " "))
         os.system("cls")
 
@@ -517,6 +529,8 @@ class App:
                 self.customize()
             elif self.k.lower() == "c":
                 self.metrics()
+            elif self.k.lower() == "d":
+                self.options()
             else:
                 self.k = 0
         self.check_progress()
