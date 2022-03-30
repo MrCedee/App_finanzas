@@ -16,6 +16,7 @@ class App:
         pd.options.display.max_columns = 20
         pd.options.display.max_rows = 100
         pd.options.display.width = 1000
+        pd.set_option("display.precision", 2)
         self.width = os.get_terminal_size()
         self.width = self.width[0]
         self.record = pd.read_pickle("record.pkl")
@@ -26,6 +27,11 @@ class App:
         self.oli = "Press any button to go back "
         self.e = ""
         self.investment_data = ""
+        
+    def rounddf(self):
+        self.record["Capital bancario"] = self.record["Capital bancario"].round(2)
+        self.record["Capital gasto"] = self.record["Capital gasto"].round(2)
+        self.record["Capital ahorrado"] = self.record["Capital ahorrado"].round(2)
 
     def opciones(self, lista: list, margen: int = 23, condicion=True):
         aux = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U",
@@ -490,6 +496,7 @@ class App:
         w = "Y or N: "
         t = input(w.rjust(round(self.width / 2)))
         if t.lower() == "y":
+            self.rounddf()
             self.record = self.record.convert_dtypes()
             self.record.to_pickle("record.pkl")
         os.system("cls")
