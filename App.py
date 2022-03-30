@@ -32,6 +32,13 @@ class App:
         self.record["Capital bancario"] = self.record["Capital bancario"].round(2)
         self.record["Capital gasto"] = self.record["Capital gasto"].round(2)
         self.record["Capital ahorrado"] = self.record["Capital ahorrado"].round(2)
+        self.record["Gastos1"] = self.record["Gastos1"].round(2)
+        self.record["Gastos2"] = self.record["Gastos2"].round(2)
+        self.record["Gastos3"] = self.record["Gastos3"].round(2)
+        self.record["Ingresos1"] = self.record["Ingresos1"].round(2)
+        self.record["Ingresos2"] = self.record["Ingresos2"].round(2)
+        self.record["Ahorro"] = self.record["Ahorro"].round(2)
+        self.record["Traspasos"] = self.record["Traspasos"].round(2)
 
     def opciones(self, lista: list, margen: int = 23, condicion=True):
         aux = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U",
@@ -309,21 +316,21 @@ class App:
             G = pd.concat([self.record.Gastos1, self.record.Gastos2, self.record.Gastos3]).to_numpy()
             SM = pd.DataFrame([], columns=["Gastos Totales", "Media de Gasto", "Desviación Típica", "Media Semanal", "Porcentaje del Total"], index=np.unique(C))
             for i in np.unique(C):
-                SM["Gastos Totales"].loc[i] = G[C == i].sum()
-                SM["Media de Gasto"].loc[i] = G[C == i].mean()
-                SM["Desviación Típica"].loc[i] = G[C == i].std()
-                SM["Media Semanal"].loc[i] = G[C == i].sum() / len(C)
-                SM["Porcentaje del Total"].loc[i] =  (G[C == i].sum() / G.sum()) * 100
+                SM["Gastos Totales"].loc[i] = round(G[C == i].sum(), 2)
+                SM["Media de Gasto"].loc[i] = round(G[C == i].mean(), 2)
+                SM["Desviación Típica"].loc[i] = round(G[C == i].std(), 2)
+                SM["Media Semanal"].loc[i] = round(G[C == i].sum() / len(C), 2)
+                SM["Porcentaje del Total"].loc[i] =  round((G[C == i].sum() / G.sum()) * 100, 2)
             SM = SM[SM["Gastos Totales"] != 0.00]
             C1 = pd.concat([self.record.Concepto_1, self.record.Concepto_2]).to_numpy()
             I = pd.concat([self.record.Ingresos1, self.record.Ingresos2]).to_numpy()
             SM1 = pd.DataFrame([], columns=["Ingresos Totales", "Media de Ingresos", "Desviación Típica", "Media Semanal", "Porcentaje del Total"], index=np.unique(C1))
             for i in np.unique(C1):
-                SM1["Ingresos Totales"].loc[i] = I[C1 == i].sum()
-                SM1["Media de Ingresos"].loc[i] = I[C1 == i].mean()
-                SM1["Desviación Típica"].loc[i] = I[C1 == i].std()
-                SM1["Media Semanal"].loc[i] = I[C1 == i].sum() / len(C1)
-                SM1["Porcentaje del Total"].loc[i] =  (I[C1 == i].sum() / I.sum()) * 100
+                SM1["Ingresos Totales"].loc[i] = round(I[C1 == i].sum(), 2)
+                SM1["Media de Ingresos"].loc[i] = round(I[C1 == i].mean(), 2)
+                SM1["Desviación Típica"].loc[i] = round(I[C1 == i].std(), 2)
+                SM1["Media Semanal"].loc[i] = round(I[C1 == i].sum() / len(C1), 2)
+                SM1["Porcentaje del Total"].loc[i] =  round((I[C1 == i].sum() / I.sum()) * 100, 2)
             SM1= SM1[SM1["Ingresos Totales"] != 0.00]           
             self.opciones(["Datos", "Gráfica"])
             self.k = input(self.o.rjust(round(self.width / 2) + 5, " "))
@@ -368,15 +375,15 @@ class App:
                 df["Ingresos Totales"] = IS
                 df["Beneficios totales"] = BS
                 metrics = pd.DataFrame(columns=["Gastos", "Ingresos", "Beneficios"], index=["Total", "Media", "Desviación Típica"])
-                metrics["Gastos"].iloc[0] = GS.sum()
-                metrics["Ingresos"].iloc[0] = IS.sum()
-                metrics["Beneficios"].iloc[0] = BS.sum()
-                metrics["Gastos"].iloc[1] = GS.mean()
-                metrics["Ingresos"].iloc[1] = IS.mean()
-                metrics["Beneficios"].iloc[1] = BS.mean()
-                metrics["Gastos"].iloc[2] = GS.std()
-                metrics["Ingresos"].iloc[2] = IS.std()
-                metrics["Beneficios"].iloc[2] = BS.std()
+                metrics["Gastos"].iloc[0] = round(GS.sum(), 2)
+                metrics["Ingresos"].iloc[0] = round(IS.sum(), 2)
+                metrics["Beneficios"].iloc[0] = round(BS.sum(), 2)
+                metrics["Gastos"].iloc[1] = round(GS.mean(), 2)
+                metrics["Ingresos"].iloc[1] = round(IS.mean(), 2)
+                metrics["Beneficios"].iloc[1] = round(BS.mean(), 2)
+                metrics["Gastos"].iloc[2] = round(GS.std(), 2)
+                metrics["Ingresos"].iloc[2] = round(IS.std(), 2)
+                metrics["Beneficios"].iloc[2] = round(BS.std(), 2)
                 print(tabulate(df, headers='keys', tablefmt='pretty'))
                 print(tabulate(metrics, headers='keys', tablefmt='pretty'))
                 for _ in range(5):
