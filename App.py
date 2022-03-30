@@ -28,8 +28,9 @@ class App:
         warnings.filterwarnings("ignore")
         self.oli = "Press any button to go back "
         self.e = ""
-        self.investment_data = ""
-        self.options_data = ""
+        self.patrimonio = 0
+        self.options_data = 0
+        self.deur = 0
         self.options_init()
     
     def options(self):
@@ -425,7 +426,9 @@ class App:
             j = self.record[["Capital bancario", "Capital gasto", "Capital ahorrado"]]
             j["Capital Disponible"] = j["Capital bancario"] + j["Capital gasto"]
             if self.k.lower() == "a":
+                self.actual_patrimonio()
                 print(tabulate(pd.DataFrame(j), headers='keys', tablefmt='pretty'))
+                print(tabulate(self.patrimonio, headers='keys', tablefmt='pretty'))
                 for i in range(15):
                     print(self.e)
                 input(self.oli.rjust(round(self.width / 2) + 15))
@@ -465,7 +468,7 @@ class App:
             print(i)
 
     def main_page(self):
-        self.init_crypto()
+        self.init_patrimonio()
         self.p_title()
         self.opciones(["Ver Estado", "Agregar Datos", "Obtener Métricas", "Configuración"], 7, False)
         self.k = input(self.o.rjust(round(self.width / 2) + 5, " "))
@@ -482,10 +485,15 @@ class App:
         for i in ts:
             print(i.center(self.width))
 
-    def init_crypto(self):
-
-        cuantities = pd.Series([223.39, 0.003598, 336.66, 300, 111], name="Cantidades")
-        crypto = ["ada", "btc", "rose", "adax", "agix"]
+    def init_patrimonio(self):
+        iri = "https://www.coingecko.com/es/monedas/tether/eur"
+        req = requests.get(iri)
+        sr = BeautifulSoup(req.content, "html.parser")
+        m = sr.find("span", class_="no-wrap").text
+        m = m[1:]
+        self.deur = float(m.replace(",", "."))
+        cuantities = [223.39, 0.003598, 336.66, 300, 111]
+        crypto = ["ada", "btc", "rose", "agix", "adax"]
         urls = ["https://coinmarketcap.com/es/currencies/cardano/", "https://coinmarketcap.com/es/currencies/bitcoin/",
                 "https://coinmarketcap.com/es/currencies/oasis-network/",
                 "https://coinmarketcap.com/es/currencies/singularitynet/",
@@ -499,11 +507,17 @@ class App:
             b = b[1:]
             price = float(b.replace(",", ""))
             prices.append(price)
-            crypt_capital.append(price * cnt)
-        prices = pd.Series(prices, name="Precio")
-        crypt_capital = pd.Series(crypt_capital, name="Capital Crypto")
-        self.investment_data = pd.concat((cuantities, prices, crypt_capital), axis=1)
-        self.investment_data.index = crypto
+            crypt_capital.append(price * cnt * self.deur)
+        self.patrimonio = pd.DataFrame(columns=crypto, index=["Cantidad", "Euros", "Dólares"])
+        self.patrimonio.loc["Cantidad"] = cuantities
+        self.patrimonio.loc["Euros"] = crypt_capital
+        self.patrimonio.loc["Dólares"] = np.array(crypt_capital)/self.deur
+    
+    def actual_patrimonio(self):
+        insertion = [self.record["Capital gasto"].iloc[-1] + self.record["Capital bancario"].iloc[-1] + self.record["Capital ahorrado"].iloc[-1],0]
+        insertion[1] = insertion[0]
+        insertion.append(insertion[0]/self.deur)
+        self.patrimonio["Euros"] = insertion
 
     def check_progress(self):
         os.system("cls")
