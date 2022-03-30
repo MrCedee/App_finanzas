@@ -31,6 +31,7 @@ class App:
         self.patrimonio = 0
         self.options_data = 0
         self.deur = 0
+        self.crypto = 0
         self.options_init()
     
     def options(self):
@@ -433,12 +434,20 @@ class App:
                     print(self.e)
                 input(self.oli.rjust(round(self.width / 2) + 15))
             elif self.k.lower() == "b":
+                self.actual_patrimonio()
+                figure, (ax1, ax2) = plt.subplots(2, 1)
+                p1 = list(self.crypto)
+                p1.append("Euros")
+                ax1.pie(self.patrimonio[p1].iloc[1],  labels=p1, shadow=True, autopct='%1.1f%%', startangle=90)
+                ax1.axis('equal')
+                ax1.title.set_text(" Distribución Patrimonio")
                 for i in j.columns:
-                    plt.plot(j.index, j[i], label=i)
-                plt.grid()
-                plt.legend()
-                plt.xticks(j.index)
-                plt.show()
+                    ax2.plot(j.index, j[i], label=i)
+                ax2.grid()
+                ax2.legend()
+                ax2.set_xticks(j.index)
+                ax2.title.set_text("Seguimiento Capitales")
+                figure.show()
             elif self.k.lower() == "c":
                 self.k = 1
             else:
@@ -493,7 +502,7 @@ class App:
         m = m[1:]
         self.deur = float(m.replace(",", "."))
         cuantities = [223.39, 0.003598, 336.66, 300, 111]
-        crypto = ["ada", "btc", "rose", "agix", "adax"]
+        self.crypto = ["ada", "btc", "rose", "agix", "adax"]
         urls = ["https://coinmarketcap.com/es/currencies/cardano/", "https://coinmarketcap.com/es/currencies/bitcoin/",
                 "https://coinmarketcap.com/es/currencies/oasis-network/",
                 "https://coinmarketcap.com/es/currencies/singularitynet/",
@@ -508,7 +517,7 @@ class App:
             price = float(b.replace(",", ""))
             prices.append(price)
             crypt_capital.append(price * cnt * self.deur)
-        self.patrimonio = pd.DataFrame(columns=crypto, index=["Cantidad", "Euros", "Dólares"])
+        self.patrimonio = pd.DataFrame(columns=self.crypto, index=["Cantidad", "Euros", "Dólares"])
         self.patrimonio.loc["Cantidad"] = cuantities
         self.patrimonio.loc["Euros"] = np.round(np.array(crypt_capital), 2)
         self.patrimonio.loc["Dólares"] = np.round(np.array(crypt_capital)/self.deur, 2)
