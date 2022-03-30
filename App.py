@@ -328,9 +328,14 @@ class App:
                 input(self.oli.rjust(round(self.width / 2) + 15))
                 os.system("cls")
             elif self.k == "b":
-                plt.pie(SM["Gastos Totales"],  labels=SM.index, shadow=True, autopct='%1.1f%%', startangle=90)
-                plt.axis('equal')
-                plt.show()
+                figure, (ax1, ax2) = plt.subplots(1, 2)
+                ax1.pie(SM["Gastos Totales"],  labels=SM.index, shadow=True, autopct='%1.1f%%', startangle=90)
+                ax1.axis('equal')
+                ax1.title.set_text("Gastos Totales")
+                ax2.pie(SM1["Ingresos Totales"],  labels=SM1.index, shadow=True, autopct='%1.1f%%', startangle=90)
+                ax2.axis('equal')
+                ax2.title.set_text("Ingresos Totales")
+                figure.show()
                 for _ in range(15):
                     print(self.e)
                 input(self.oli.rjust(round(self.width / 2) + 15))
