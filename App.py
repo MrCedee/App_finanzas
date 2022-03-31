@@ -22,7 +22,8 @@ class App:
         self.width = os.get_terminal_size()
         self.width = self.width[0]
         self.record = pd.read_pickle("record.pkl")
-        self.k = "1"
+        self.state = -1
+        self.ask = 0
         self.o = "Option: "
         self.g = "-".center(self.width, "-")
         warnings.filterwarnings("ignore")
@@ -33,6 +34,21 @@ class App:
         self.deur = 0
         self.crypto = 0
         self.options_init()
+        
+    def confirm(self):
+        os.system("cls")
+        for _ in range(50):
+                print(self.e)
+        w = "Exit?"
+        print(w.center(self.width))
+        print(self.e)
+        w = "Y or N: "
+        t = input(w.rjust(round(self.width / 2)))
+        if t.lower() =="n":
+            os.system("cls")
+            return False
+        else:
+            return True    
     
     def options(self):
         pass
@@ -71,9 +87,9 @@ class App:
             print("".join(l).center(self.width))
             print(" ")
         if condicion:
-            m = aux[i + 1] + " - Volver al Inicio"
+            m = aux[i + 1] + " - Volver atrás"
             print(m.center(self.width))
-            print("=   ====== == ======".center(self.width))
+            print("=   ====== =====".center(self.width))
             print(" ")
         print("Other - Salir".center(self.width))
         print("=====   =====".center(self.width))
@@ -82,11 +98,13 @@ class App:
         print(" ")
 
     def customize(self):
-        while self.k != 1 and self.k != 0:
+        self.state = 2
+        while self.state != 1 and self.state != 0:
+            self.state = 2
             self.opciones(["Nueva Semana", "Semana Anterior"])
-            self.k = input(self.o.rjust(round(self.width / 2) + 5, " "))
+            self.ask = input(self.o.rjust(round(self.width / 2) + 5, " "))
             os.system("cls")
-            if self.k.lower() == "a":
+            if self.ask.lower() == "a":
                 delta = np.timedelta64(1, 'W')
                 day = np.datetime64(self.record.index[-1], "D") + delta
                 capitalb = self.record["Capital bancario"].iloc[-1]
@@ -147,7 +165,7 @@ class App:
                 c.append(capitala)
                 self.record.loc[day] = c
                 os.system("cls")
-            elif self.k.lower() == "b":
+            elif self.ask.lower() == "b":
                 self.p_table()
                 j = "Escriba la fecha de los datos a modificar siguiedo el formato YYYY-MM-DD"
                 v = input(j.rjust(round(self.width / 2) + 5, " ") + ": ")
@@ -278,17 +296,19 @@ class App:
                     partition.loc[v] = part
                     self.record.loc[v:] = partition
                 os.system("cls")
-            elif self.k.lower() == "c":
-                self.k = 1
+            elif self.ask.lower() == "c":
+                self.state = 1
             else:
-                self.k = 0
+                self.state = 0
 
     def view(self):
-        while self.k != 0 and self.k != 1:
+        self.state = 2
+        while self.state != 0 and self.state != 1:
+            self.state = 2
             self.p_table()
             self.opciones(["Vista Detallada"], 1)
-            self.k = input(self.o.rjust(round(self.width / 2) + 5, " "))
-            if self.k.lower() == "a":
+            self.ask = input(self.o.rjust(round(self.width / 2) + 5, " "))
+            if self.ask.lower() == "a":
                 print(self.e)
                 j = "Insert a week (YYY-MM-DD) or a couple of weeks (, separator not space), or a range of weeks (_ separator): "
                 j1 = input(j.rjust(round(self.width / 2) + 15))
@@ -316,15 +336,17 @@ class App:
                         print(self.e)
                     input(self.oli.rjust(round(self.width / 2) + 15))
                     os.system("cls")
-            elif self.k.lower() == "b":
-                self.k = 1
+            elif self.ask.lower() == "b":
+                self.state = 1
                 os.system("cls")
             else:
-                self.k = 0
+                self.state = 0
                 os.system("cls")
 
     def conceptos(self):
-        while self.k != 0 and self.k != 1:
+        self.state = 3
+        while self.state != 0 and self.state != 2:
+            self.state = 3
             C = pd.concat([self.record.Concepto1, self.record.Concepto2, self.record.Concepto3]).to_numpy()
             G = pd.concat([self.record.Gastos1, self.record.Gastos2, self.record.Gastos3]).to_numpy()
             SM = pd.DataFrame([], columns=["Gastos Totales", "Media de Gasto", "Desviación Típica", "Media Semanal", "Porcentaje del Total"], index=np.unique(C))
@@ -346,16 +368,16 @@ class App:
                 SM1["Porcentaje del Total"].loc[i] =  round((I[C1 == i].sum() / I.sum()) * 100, 2)
             SM1= SM1[SM1["Ingresos Totales"] != 0.00]           
             self.opciones(["Datos", "Gráfica"])
-            self.k = input(self.o.rjust(round(self.width / 2) + 5, " "))
+            self.ask = input(self.o.rjust(round(self.width / 2) + 5, " "))
             os.system("cls")
-            if self.k.lower() == "a":
+            if self.ask.lower() == "a":
                 print(tabulate(SM, headers='keys', tablefmt='pretty'))
                 print(tabulate(SM1, headers='keys', tablefmt='pretty'))
                 for i in range(15):
                     print(self.e)
                 input(self.oli.rjust(round(self.width / 2) + 15))
                 os.system("cls")
-            elif self.k == "b":
+            elif self.ask == "b":
                 figure, (ax1, ax2) = plt.subplots(1, 2)
                 ax1.pie(SM["Gastos Totales"],  labels=SM.index, shadow=True, autopct='%1.1f%%', startangle=90)
                 ax1.axis('equal')
@@ -368,21 +390,23 @@ class App:
                     print(self.e)
                 input(self.oli.rjust(round(self.width / 2) + 15))
                 os.system("cls")
-            elif self.k == "c":
-                self.k = 1
+            elif self.ask == "c":
+                self.state = 2
             else:
                 self.k = 0
 
     def g_i(self):
-        while self.k != 0 and self.k != 1:
+        self.state = 3
+        while self.state != 0 and self.state != 2:
+            self.state = 3
             GS = self.record.Gastos1 + self.record.Gastos2 + self.record.Gastos3
             IS = self.record.Ingresos1 + self.record.Ingresos2
             BS = IS - GS
             os.system("cls")
             self.opciones(["Datos", "Gráfica"])
-            self.k = input(self.o.rjust(round(self.width / 2) + 5, " "))
+            self.ask = input(self.o.rjust(round(self.width / 2) + 5, " "))
             os.system("cls")
-            if self.k.lower() == "a":
+            if self.ask.lower() == "a":
                 df = pd.DataFrame([])
                 df["Gastos Totales"] = GS.round(2)
                 df["Ingresos Totales"] = IS.round(2)
@@ -402,7 +426,7 @@ class App:
                 for _ in range(5):
                     print(self.e)
                 input(self.oli.rjust(round(self.width / 2) + 15))
-            elif self.k == "b":
+            elif self.ask == "b":
                 plt.plot(GS.index, GS, label="Gastos Totales")
                 plt.plot(IS.index, IS, label="Ingresos Totales")
                 plt.plot(BS.index, BS, label="Benficios Totales" )
@@ -413,27 +437,29 @@ class App:
                 for _ in range(15):
                     print(self.e)
                 input(self.oli.rjust(round(self.width / 2) + 15))
-            elif self.k == "c":
-                self.k = 1
+            elif self.ask == "c":
+                self.state = 2
             else:
-                self.k = 0
+                self.state = 0
 
     def capitales(self):
-        while self.k != 0 and self.k != 1:
+        self.state = 3
+        while self.state != 0 and self.state != 2:
+            self.state = 3
             os.system("cls")
             self.opciones(["Datos", "Gráfica"])
-            self.k = input(self.o.rjust(round(self.width / 2) + 5, " "))
+            self.ask = input(self.o.rjust(round(self.width / 2) + 5, " "))
             os.system("cls")
             j = self.record[["Capital bancario", "Capital gasto", "Capital ahorrado"]]
             j["Capital Disponible"] = j["Capital bancario"] + j["Capital gasto"]
-            if self.k.lower() == "a":
+            if self.ask.lower() == "a":
                 self.actual_patrimonio()
                 print(tabulate(pd.DataFrame(j), headers='keys', tablefmt='pretty'))
                 print(tabulate(self.patrimonio, headers='keys', tablefmt='pretty'))
                 for i in range(15):
                     print(self.e)
                 input(self.oli.rjust(round(self.width / 2) + 15))
-            elif self.k.lower() == "b":
+            elif self.ask.lower() == "b":
                 self.actual_patrimonio()
                 figure, (ax1, ax2) = plt.subplots(2, 1)
                 p1 = list(self.crypto)
@@ -448,27 +474,29 @@ class App:
                 ax2.set_xticks(j.index)
                 ax2.title.set_text("Seguimiento Capitales")
                 figure.show()
-            elif self.k.lower() == "c":
-                self.k = 1
+            elif self.ask.lower() == "c":
+                self.state = 2
             else:
-                self.k = 0
+                self.state = 0
 
     def metrics(self):
         os.system("cls")
-        while self.k != 0 and self.k != 1:
+        self.state = 2
+        while self.state != 0 and self.state != 1:
+            self.state = 2
             self.opciones(["Conceptos", "Gastos e Ingresos", " Cápitales"])
-            self.k = input(self.o.rjust(round(self.width / 2) + 5, " "))
+            self.ask = input(self.o.rjust(round(self.width / 2) + 5, " "))
             os.system("cls")
-            if self.k.lower() == "a":
+            if self.ask.lower() == "a":
                 self.conceptos()
-            elif self.k.lower() == "b":
+            elif self.ask.lower() == "b":
                 self.g_i()
-            elif self.k.lower() == "c":
+            elif self.ask.lower() == "c":
                 self.capitales()
-            elif self.k.lower() == "d":
-                self.k = 1
+            elif self.ask.lower() == "d":
+                self.state = 1
             else:
-                self.k = 0
+                self.state = 0
 
     def p_table(self):
         p = [self.g, self.g, self.e, tabulate(self.record, headers='keys', tablefmt='pretty'), self.e, self.g, self.g,
@@ -477,10 +505,10 @@ class App:
             print(i)
 
     def main_page(self):
-        self.init_patrimonio()
+        self.state = 1
         self.p_title()
         self.opciones(["Ver Estado", "Agregar Datos", "Obtener Métricas", "Configuración"], 7, False)
-        self.k = input(self.o.rjust(round(self.width / 2) + 5, " "))
+        self.ask = input(self.o.rjust(round(self.width / 2) + 5, " "))
         os.system("cls")
 
     def p_title(self):
@@ -546,17 +574,19 @@ class App:
         os.system("cls")
 
     def run(self):
-        while self.k != 0:
+        self.init_patrimonio()
+        while self.state != 0:
             self.main_page()
-            if self.k.lower() == "a":
+            if self.ask.lower() == "a":
                 self.view()
-            elif self.k.lower() == "b":
+            elif self.ask.lower() == "b":
                 self.customize()
-            elif self.k.lower() == "c":
+            elif self.ask.lower() == "c":
                 self.metrics()
-            elif self.k.lower() == "d":
+            elif self.ask.lower() == "d":
                 self.options()
             else:
-                self.k = 0
+                if self.confirm():
+                    self.state = 0
         self.check_progress()
         keyboard.press("f11")
