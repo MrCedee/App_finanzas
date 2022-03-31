@@ -43,4 +43,5 @@ asa = [1,2,3,4,5]
 investment_data.loc["Cantidad"] = cuantities
 investment_data.loc["Euros"] = crypt_capital
 investment_data.loc["Dólares"] = np.array(crypt_capital)/deur
+
 print(investment_data)
