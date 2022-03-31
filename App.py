@@ -34,6 +34,8 @@ class App:
         self.options_data = 0
         self.deur = 0
         self.crypto = 0
+        self.cuantities = 0
+        self.cuantities = np.load("cuantities.npy")
         self.options_init()
         
     def confirm(self):
@@ -102,7 +104,7 @@ class App:
         self.state = 2
         while self.state != 1 and self.state != 0:
             self.state = 2
-            self.opciones(["Nueva Semana", "Semana Anterior"])
+            self.opciones(["Nueva Semana", "Semana Anterior", "Cryptos"])
             self.ask = input(self.o.rjust(round(self.width / 2) + 5, " "))
             os.system("cls")
             if self.ask.lower() == "a":
@@ -298,6 +300,19 @@ class App:
                     self.record.loc[v:] = partition
                 os.system("cls")
             elif self.ask.lower() == "c":
+                aux = pd.DataFrame(self.cuantities, index=self.crypto , columns=["Cryptos"])
+                print(tabulate(aux, headers='keys', tablefmt='pretty'))
+                for i in range(15):
+                    print(self.e)
+                p = "¿Que criptomoneda quieres modificar? "
+                ask1 = input(p.rjust(round(self.width / 2) + 5, " "))
+                if ask1 in self.crypto:
+                    inde = self.crypto.index(ask1)
+                    cass = "¿Cantidad adicional? "
+                    ask2 = float(input(cass.rjust(round(self.width / 2) + 5, " ")))
+                    self.cuantities[inde] += ask2
+                os.system("cls")
+            elif self.ask.lower() == "d":
                 self.state = 1
             else:
                 self.state = 0
@@ -444,6 +459,7 @@ class App:
                 self.state = 0
 
     def capitales(self):
+        self.init_patrimonio()
         self.state = 3
         while self.state != 0 and self.state != 2:
             self.state = 3
@@ -530,7 +546,6 @@ class App:
         m = sr.find("span", class_="no-wrap").text
         m = m[1:]
         self.deur = float(m.replace(",", "."))
-        cuantities = [223.39, 0.003598, 336.66, 300, 111]
         self.crypto = ["ada", "btc", "rose", "agix", "adax"]
         urls = ["https://coinmarketcap.com/es/currencies/cardano/", "https://coinmarketcap.com/es/currencies/bitcoin/",
                 "https://coinmarketcap.com/es/currencies/oasis-network/",
@@ -538,7 +553,7 @@ class App:
                 "https://coinmarketcap.com/es/currencies/adax/"]
         crypt_capital = []
         prices = []
-        for cnt, ur in zip(cuantities, urls):
+        for cnt, ur in zip(self.cuantities, urls):
             c = requests.get(ur)
             soup = BeautifulSoup(c.content, "html.parser")
             b = soup.find(class_="priceValue").text.strip()
@@ -547,7 +562,7 @@ class App:
             prices.append(price)
             crypt_capital.append(price * cnt * self.deur)
         self.patrimonio = pd.DataFrame(columns=self.crypto, index=["Cantidad", "Euros", "Dólares"])
-        self.patrimonio.loc["Cantidad"] = cuantities
+        self.patrimonio.loc["Cantidad"] = self.cuantities
         self.patrimonio.loc["Euros"] = np.round(np.array(crypt_capital), 2)
         self.patrimonio.loc["Dólares"] = np.round(np.array(crypt_capital)/self.deur, 2)
     
@@ -572,6 +587,7 @@ class App:
             self.rounddf()
             self.record = self.record.convert_dtypes()
             self.record.to_pickle("record.pkl")
+            np.save("cuantities.npy", self.cuantities)
         os.system("cls")
 
     def outro(self):
