@@ -103,7 +103,7 @@ class App:
         self.record["Ahorro"] = self.record["Ahorro"].round(2)
         self.record["Traspasos"] = self.record["Traspasos"].round(2)
 
-    def opciones(self, lista: list, margen: int = 23, condicion=True):
+    def opciones(self, lista: list, margen: int = 23, condicion: bool =True):
         aux = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U",
                'V', "W", "X", "Y", "Z"]
         for i in range(margen - len(lista)):
@@ -510,6 +510,7 @@ class App:
             j = self.record[["Capital bancario", "Capital gasto", "Capital ahorrado"]]
             j["Capital Disponible"] = j["Capital bancario"] + j["Capital gasto"]
             j["Capital Total"] = j["Capital Disponible"] + j["Capital ahorrado"]
+            j["Capital Total"] = j["Capital Total"].round(2)
             if self.ask.lower() == "a":
                 print(tabulate(pd.DataFrame(j), headers='keys', tablefmt='pretty'))
                 if self.options_data["Crypto"]:
