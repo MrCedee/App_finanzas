@@ -36,7 +36,16 @@ class App:
         self.crypto = 0
         self.cuantities = 0
         self.cuantities = np.load("cuantities.npy")
+        self.dolar_euro()
         self.options_init()
+        
+    def dolar_euro(self):
+        iri = "https://www.coingecko.com/es/monedas/tether/eur"
+        req = requests.get(iri)
+        sr = BeautifulSoup(req.content, "html.parser")
+        m = sr.find("span", class_="no-wrap").text
+        m = m[1:]
+        self.deur = float(m.replace(",", "."))
         
     def confirm(self):
         os.system("cls")
@@ -54,7 +63,15 @@ class App:
             return True    
     
     def options(self):
-        pass
+        os.system("cls")
+        for i in range(5):
+            print(self.e)
+        
+        self.opciones(["Mostrar Cryptos, Actual: " + str(self.options_data["Crypto"]), "Opciones de indices"])
+        self.ask = input(self.o.rjust(round(self.width / 2) + 5, " "))
+        if self.ask.lower() == "a":
+            self.options_data["Crypto"] = not self.options_data["Crypto"]
+        os.system("cls")
 
     def options_init(self):
         with open("options.pkl", "rb") as op:
@@ -104,7 +121,10 @@ class App:
         self.state = 2
         while self.state != 1 and self.state != 0:
             self.state = 2
-            self.opciones(["Nueva Semana", "Semana Anterior", "Cryptos"])
+            if self.options_data["Crypto"]:
+                self.opciones(["Nueva Semana", "Semana Anterior", "Cryptos"])
+            else:
+                self.opciones(["Nueva Semana", "Semana Anterior"])
             self.ask = input(self.o.rjust(round(self.width / 2) + 5, " "))
             os.system("cls")
             if self.ask.lower() == "a":
@@ -300,20 +320,26 @@ class App:
                     self.record.loc[v:] = partition
                 os.system("cls")
             elif self.ask.lower() == "c":
-                aux = pd.DataFrame(self.cuantities, index=self.crypto , columns=["Cryptos"])
-                print(tabulate(aux, headers='keys', tablefmt='pretty'))
-                for i in range(15):
-                    print(self.e)
-                p = "¿Que criptomoneda quieres modificar? "
-                ask1 = input(p.rjust(round(self.width / 2) + 5, " "))
-                if ask1 in self.crypto:
-                    inde = self.crypto.index(ask1)
-                    cass = "¿Cantidad adicional? "
-                    ask2 = float(input(cass.rjust(round(self.width / 2) + 5, " ")))
-                    self.cuantities[inde] += ask2
-                os.system("cls")
+                if self.options_data["Crypto"]:
+                    aux = pd.DataFrame(self.cuantities, index=self.crypto , columns=["Cryptos"])
+                    print(tabulate(aux, headers='keys', tablefmt='pretty'))
+                    for i in range(15):
+                        print(self.e)
+                    p = "¿Que criptomoneda quieres modificar? "
+                    ask1 = input(p.rjust(round(self.width / 2) + 5, " "))
+                    if ask1 in self.crypto:
+                        inde = self.crypto.index(ask1)
+                        cass = "¿Cantidad adicional? "
+                        ask2 = float(input(cass.rjust(round(self.width / 2) + 5, " ")))
+                        self.cuantities[inde] += ask2
+                    os.system("cls")
+                else:
+                    self.state = 1
             elif self.ask.lower() == "d":
-                self.state = 1
+                if self.options_data["Crypto"]:
+                    self.state = 1
+                else:
+                    self.state = 0
             else:
                 self.state = 0
 
@@ -469,28 +495,40 @@ class App:
             os.system("cls")
             j = self.record[["Capital bancario", "Capital gasto", "Capital ahorrado"]]
             j["Capital Disponible"] = j["Capital bancario"] + j["Capital gasto"]
+            j["Capital Total"] = j["Capital Disponible"] + j["Capital ahorrado"]
             if self.ask.lower() == "a":
-                self.actual_patrimonio()
                 print(tabulate(pd.DataFrame(j), headers='keys', tablefmt='pretty'))
-                print(tabulate(self.patrimonio, headers='keys', tablefmt='pretty'))
+                if self.options_data["Crypto"]:
+                    self.actual_patrimonio()
+                    print(tabulate(self.patrimonio, headers='keys', tablefmt='pretty'))
                 for i in range(15):
                     print(self.e)
                 input(self.oli.rjust(round(self.width / 2) + 15))
             elif self.ask.lower() == "b":
-                self.actual_patrimonio()
-                figure, (ax1, ax2) = plt.subplots(2, 1)
-                p1 = list(self.crypto)
-                p1.append("Euros")
-                ax1.pie(self.patrimonio[p1].iloc[1],  labels=p1, shadow=True, autopct='%1.1f%%', startangle=90)
-                ax1.axis('equal')
-                ax1.title.set_text(" Distribución Patrimonio")
-                for i in j.columns:
-                    ax2.plot(j.index, j[i], label=i)
-                ax2.grid()
-                ax2.legend()
-                ax2.set_xticks(j.index)
-                ax2.title.set_text("Seguimiento Capitales")
-                figure.show()
+                if self.options_data["Crypto"]:
+                    self.actual_patrimonio()
+                    figure, (ax1, ax2) = plt.subplots(2, 1)
+                    p1 = list(self.crypto)
+                    p1.append("Euros")
+                    ax1.pie(self.patrimonio[p1].iloc[1],  labels=p1, shadow=True, autopct='%1.1f%%', startangle=90)
+                    ax1.axis('equal')
+                    ax1.title.set_text(" Distribución Patrimonio")
+                    for i in j.columns:
+                        ax2.plot(j.index, j[i], label=i)
+                    ax2.grid()
+                    ax2.legend()
+                    ax2.set_xticks(j.index)
+                    ax2.title.set_text("Seguimiento Capitales")
+                    figure.show()
+                else:
+                    for i in j.columns:
+                        plt.plot(j.index, j[i], label=i)
+                    plt.grid()
+                    plt.legend()
+                    plt.xticks(j.index)
+                    plt.title("Seguimiento de Capitales")
+                    plt.show()
+                    
             elif self.ask.lower() == "c":
                 self.state = 2
             else:
@@ -540,31 +578,28 @@ class App:
             print(i.center(self.width))
 
     def init_patrimonio(self):
-        iri = "https://www.coingecko.com/es/monedas/tether/eur"
-        req = requests.get(iri)
-        sr = BeautifulSoup(req.content, "html.parser")
-        m = sr.find("span", class_="no-wrap").text
-        m = m[1:]
-        self.deur = float(m.replace(",", "."))
-        self.crypto = ["ada", "btc", "rose", "agix", "adax"]
-        urls = ["https://coinmarketcap.com/es/currencies/cardano/", "https://coinmarketcap.com/es/currencies/bitcoin/",
-                "https://coinmarketcap.com/es/currencies/oasis-network/",
-                "https://coinmarketcap.com/es/currencies/singularitynet/",
-                "https://coinmarketcap.com/es/currencies/adax/"]
-        crypt_capital = []
-        prices = []
-        for cnt, ur in zip(self.cuantities, urls):
-            c = requests.get(ur)
-            soup = BeautifulSoup(c.content, "html.parser")
-            b = soup.find(class_="priceValue").text.strip()
-            b = b[1:]
-            price = float(b.replace(",", ""))
-            prices.append(price)
-            crypt_capital.append(price * cnt * self.deur)
-        self.patrimonio = pd.DataFrame(columns=self.crypto, index=["Cantidad", "Euros", "Dólares"])
-        self.patrimonio.loc["Cantidad"] = self.cuantities
-        self.patrimonio.loc["Euros"] = np.round(np.array(crypt_capital), 2)
-        self.patrimonio.loc["Dólares"] = np.round(np.array(crypt_capital)/self.deur, 2)
+        if self.options_data["Crypto"]: 
+            self.crypto = ["ada", "btc", "rose", "agix", "adax"]
+            urls = ["https://coinmarketcap.com/es/currencies/cardano/", "https://coinmarketcap.com/es/currencies/bitcoin/",
+                    "https://coinmarketcap.com/es/currencies/oasis-network/",
+                    "https://coinmarketcap.com/es/currencies/singularitynet/",
+                    "https://coinmarketcap.com/es/currencies/adax/"]
+            crypt_capital = []
+            prices = []
+            for cnt, ur in zip(self.cuantities, urls):
+                c = requests.get(ur)
+                soup = BeautifulSoup(c.content, "html.parser")
+                b = soup.find(class_="priceValue").text.strip()
+                b = b[1:]
+                price = float(b.replace(",", ""))
+                prices.append(price)
+                crypt_capital.append(price * cnt * self.deur)
+            self.patrimonio = pd.DataFrame(columns=self.crypto, index=["Cantidad", "Euros", "Dólares"])
+            self.patrimonio.loc["Cantidad"] = self.cuantities
+            self.patrimonio.loc["Euros"] = np.round(np.array(crypt_capital), 2)
+            self.patrimonio.loc["Dólares"] = np.round(np.array(crypt_capital)/self.deur, 2)
+        else:
+            self.patrimonio = pd.DataFrame(index=["Euros", "Dólares"])
     
     def actual_patrimonio(self):
         insertion = [self.record["Capital gasto"].iloc[-1] + self.record["Capital bancario"].iloc[-1] + self.record["Capital ahorrado"].iloc[-1],0]

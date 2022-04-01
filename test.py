@@ -10,7 +10,12 @@ import requests
 import time
 import pickle
 
-cuant = np.array([223.39, 0.003598, 336.66, 300, 111])
-cuantities1 = pd.DataFrame(cuant)
+options = {"Crypto": True, "Axis": 3}
 
-print(cuantities1)
+with open("options.pkl", "wb") as op:
+    pickle.dump(options, op)
+
+with open("options.pkl", "rb") as op:
+    options_data = pickle.load(op)
+if options_data["Crypto"]:
+    print(options_data)
