@@ -652,7 +652,7 @@ class App:
         insertion.append(round(insertion[0]/self.deur, 2))
         self.patrimonio["Cryptos"] = [1, round(self.patrimonio.loc["Euros"].sum(), 2), round(self.patrimonio.loc["Dólares"].sum(), 2)]
         self.patrimonio["Euros"] = insertion
-        self.patrimonio["Patrimonio"] = [1, self.patrimonio["Cryptos"].loc["Euros"] + self.patrimonio["Euros"].loc["Euros"] , self.patrimonio["Cryptos"].loc["Dólares"] + self.patrimonio["Euros"].loc["Dólares"]]
+        self.patrimonio["Patrimonio"] = [1, round(self.patrimonio["Cryptos"].loc["Euros"] + self.patrimonio["Euros"].loc["Euros"]) , round(self.patrimonio["Cryptos"].loc["Dólares"] + self.patrimonio["Euros"].loc["Dólares"])]
 
     def check_progress(self):
         os.system("cls")
