@@ -488,7 +488,21 @@ class App:
                 plt.plot(BS.index, BS, label="Benficios Totales" )
                 plt.legend()
                 plt.grid()
-                plt.xticks(GS.index, rotation="vertical")
+                if self.options_data["Axis"] == 3:
+                    plt.xticks(GS.index, rotation="vertical")
+                    t = np.linspace(min(BS), max(IS), 20, dtype="int").tolist()
+                    t.append(0)
+                    plt.yticks(t)
+                elif self.options_data["Axis"] == 2:
+                    plt.xticks(GS.index[::2], rotation="vertical")
+                    t = np.linspace(min(BS), max(IS), 10, dtype="int").tolist()
+                    t.append(0)
+                    plt.yticks(t)
+                else:
+                    plt.xticks(GS.index[::4])
+                    t = np.linspace(min(BS), max(IS), 5, dtype="int").tolist()
+                    t.append(0)
+                    plt.yticks(t)
                 plt.show()
                 for _ in range(15):
                     print(self.e)
@@ -532,7 +546,15 @@ class App:
                         ax2.plot(j.index, j[i], label=i)
                     ax2.grid()
                     ax2.legend()
-                    ax2.set_xticks(j.index)
+                    if self.options_data["Axis"] == 3:
+                        ax2.set_xticks(j.index)
+                        ax2.set_yticks(np.linspace(min(j.min()), max(j.max()), 20, dtype="int"))
+                    elif self.options_data["Axis"] == 2:
+                        ax2.set_xticks(j.index[::2])
+                        ax2.set_yticks(np.linspace(min(j.min()), max(j.max()), 10, dtype="int"))
+                    else:
+                        ax2.set_xticks(j.index[::4])
+                        ax2.set_yticks(np.linspace(min(j.min()), max(j.max()), 5, dtype="int"))
                     ax2.title.set_text("Seguimiento Capitales")
                     figure.show()
                 else:
@@ -540,7 +562,15 @@ class App:
                         plt.plot(j.index, j[i], label=i)
                     plt.grid()
                     plt.legend()
-                    plt.xticks(j.index)
+                    if self.options_data["Axis"] == 3:
+                        plt.xticks(j.index)
+                        plt.yticks(np.linspace(min(j.min()), max(j.max()), 20, dtype="int"))
+                    elif self.options_data["Axis"] == 2:
+                        plt.xticks(j.index[::2])
+                        plt.yticks(np.linspace(min(j.min()), max(j.max()), 10, dtype="int"))
+                    else:
+                        plt.xticks(j.index[::4])
+                        plt.yticks(np.linspace(min(j.min()), max(j.max()), 5, dtype="int"))
                     plt.title("Seguimiento de Capitales")
                     plt.show()
                     
