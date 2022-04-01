@@ -67,10 +67,24 @@ class App:
         for i in range(5):
             print(self.e)
         
-        self.opciones(["Mostrar Cryptos, Actual: " + str(self.options_data["Crypto"]), "Opciones de indices"])
+        self.opciones(["Mostrar Cryptos, Actual: " + str(self.options_data["Crypto"]), "Opciones de indices, Actual: " + str(self.options_data["Axis"])])
         self.ask = input(self.o.rjust(round(self.width / 2) + 5, " "))
         if self.ask.lower() == "a":
             self.options_data["Crypto"] = not self.options_data["Crypto"]
+        elif self.ask.lower() == "b":
+            t = ["Cantidad de indices en Gráficos reducida: 1", "Cantidad de indices media: 2", "Cantidad de indices total: 3"]
+            for i in t:
+                print(i.center(self.width))
+            ask1 = input(self.o.rjust(round(self.width / 2) + 5, " "))
+            if ask1 == "1" or ask1 == "2" or ask1 == "3":
+                self.options_data["Axis"] = int(ask1)
+        elif self.ask.lower() == "c":
+            self.status = 1
+        else:
+            self.status = 0
+            
+        with open("options.pkl", "wb") as op:
+            pickle.dump(self.options_data, op)
         os.system("cls")
 
     def options_init(self):
@@ -658,8 +672,12 @@ class App:
             elif self.ask.lower() == "d":
                 self.options()
             else:
+                self.state = 0
+            if self.state == 0:
                 if self.confirm():
                     self.state = 0
+                else:
+                    self.state = -1
         self.check_progress()
         self.outro()
         keyboard.press("f11")
