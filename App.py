@@ -486,6 +486,8 @@ class App:
                 plt.plot(GS.index, GS, label="Gastos Totales")
                 plt.plot(IS.index, IS, label="Ingresos Totales")
                 plt.plot(BS.index, BS, label="Benficios Totales" )
+                plt.ylabel("Euros")
+                plt.xlabel("Tiempo")
                 plt.legend()
                 plt.grid()
                 if self.options_data["Axis"] == 3:
@@ -546,6 +548,8 @@ class App:
                         ax2.plot(j.index, j[i], label=i)
                     ax2.grid()
                     ax2.legend()
+                    ax2.set_ylabel("Euros")
+                    ax2.set_xlabel("Tiempo")
                     if self.options_data["Axis"] == 3:
                         ax2.set_xticks(j.index)
                         ax2.set_yticks(np.linspace(min(j.min()), max(j.max()), 20, dtype="int"))
@@ -562,6 +566,8 @@ class App:
                         plt.plot(j.index, j[i], label=i)
                     plt.grid()
                     plt.legend()
+                    plt.ylabel("Euros")
+                    plt.xlabel("Tiempo")
                     if self.options_data["Axis"] == 3:
                         plt.xticks(j.index)
                         plt.yticks(np.linspace(min(j.min()), max(j.max()), 20, dtype="int"))
