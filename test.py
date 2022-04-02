@@ -10,6 +10,12 @@ import requests
 import time
 import pickle
 
-i=[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
-print(len(i))
-print(len(i[::2]))
+i=np.arange(1,10,1)
+j = np.arange(1,20,0.5)
+plt.subplot(2,2,(1,2))
+plt.plot(i,i)
+
+plt.subplot(2,2,(3,4))
+plt.plot(j,j)
+
+plt.show()
