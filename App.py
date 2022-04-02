@@ -356,6 +356,7 @@ class App:
                     self.state = 0
             else:
                 self.state = 0
+        self.rounddf()
 
     def view(self):
         self.state = 2
