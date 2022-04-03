@@ -92,16 +92,16 @@ class App:
             self.options_data = pickle.load(op)
 
     def rounddf(self):
-        self.record["Capital bancario"] = self.record["Capital bancario"].round(2)
-        self.record["Capital gasto"] = self.record["Capital gasto"].round(2)
-        self.record["Capital ahorrado"] = self.record["Capital ahorrado"].round(2)
-        self.record["Gastos1"] = self.record["Gastos1"].round(2)
-        self.record["Gastos2"] = self.record["Gastos2"].round(2)
-        self.record["Gastos3"] = self.record["Gastos3"].round(2)
-        self.record["Ingresos1"] = self.record["Ingresos1"].round(2)
-        self.record["Ingresos2"] = self.record["Ingresos2"].round(2)
-        self.record["Ahorro"] = self.record["Ahorro"].round(2)
-        self.record["Traspasos"] = self.record["Traspasos"].round(2)
+        self.record["Capital bancario"] = self.record["Capital bancario"].astype("float").round(2)
+        self.record["Capital gasto"] = self.record["Capital gasto"].astype("float").round(2)
+        self.record["Capital ahorrado"] = self.record["Capital ahorrado"].astype("float").round(2)
+        self.record["Gastos1"] = self.record["Gastos1"].astype("float").round(2)
+        self.record["Gastos2"] = self.record["Gastos2"].astype("float").round(2)
+        self.record["Gastos3"] = self.record["Gastos3"].astype("float").round(2)
+        self.record["Ingresos1"] = self.record["Ingresos1"].astype("float").round(2)
+        self.record["Ingresos2"] = self.record["Ingresos2"].astype("float").round(2)
+        self.record["Ahorro"] = self.record["Ahorro"].astype("float").round(2)
+        self.record["Traspasos"] = self.record["Traspasos"].astype("float").round(2)
 
     def opciones(self, lista: list, margen: int = 23, condicion: bool =True):
         aux = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U",
@@ -356,6 +356,7 @@ class App:
                     self.state = 0
             else:
                 self.state = 0
+        self.rounddf()
 
     def view(self):
         self.state = 2
@@ -525,8 +526,9 @@ class App:
             os.system("cls")
             j = self.record[["Capital bancario", "Capital gasto", "Capital ahorrado"]]
             j["Capital Disponible"] = j["Capital bancario"] + j["Capital gasto"]
+            j["Capital Disponible"] = j["Capital Disponible"].astype("float").round(2)
             j["Capital Total"] = j["Capital Disponible"] + j["Capital ahorrado"]
-            j["Capital Total"] = j["Capital Total"].round(2)
+            j["Capital Total"] = j["Capital Total"].astype("float").round(2)
             if self.ask.lower() == "a":
                 print(tabulate(pd.DataFrame(j), headers='keys', tablefmt='pretty'))
                 if self.options_data["Crypto"]:
