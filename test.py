@@ -1,4 +1,4 @@
-from http.client import REQUESTED_RANGE_NOT_SATISFIABLE
+import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
@@ -10,12 +10,9 @@ import requests
 import time
 import pickle
 
-i=np.arange(1,10,1)
-j = np.arange(1,20,0.5)
-plt.subplot(2,2,(1,2))
-plt.plot(i,i)
+record = pd.read_pickle("record.pkl")
 
-plt.subplot(2,2,(3,4))
-plt.plot(j,j)
-
+c = pd.concat((record["Gastos1"], record["Gastos2"], record["Gastos3"]))
+print(c)
+plt.hist(c, c.shape[0], (c.min(), c.max()))
 plt.show()

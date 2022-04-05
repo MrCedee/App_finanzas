@@ -4,6 +4,7 @@ import os
 from tabulate import tabulate
 import warnings
 import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
 import keyboard
 import requests
 from bs4 import BeautifulSoup
@@ -484,29 +485,70 @@ class App:
                     print(self.e)
                 input(self.oli.rjust(round(self.width / 2) + 15))
             elif self.ask == "b":
-                plt.plot(GS.index, GS, label="Gastos Totales")
-                plt.plot(IS.index, IS, label="Ingresos Totales")
-                plt.plot(BS.index, BS, label="Benficios Totales" )
-                plt.ylabel("Euros")
-                plt.xlabel("Tiempo")
-                plt.legend()
-                plt.grid()
+                fig = plt.figure()
+                gd = gridspec.GridSpec(2,3)
+                ax1 = fig.add_subplot(gd[0,:])
+                ax1.plot(GS.index, GS, label="Gastos Totales")
+                ax1.plot(IS.index, IS, label="Ingresos Totales")
+                ax1.plot(BS.index, BS, label="Benficios Totales" )
+                ax1.set_ylabel("Euros")
+                ax1.set_xlabel("Tiempo")
+                ax1.legend()
+                ax1.grid()
+                ax2 = fig.add_subplot(gd[1,0])
+                ax2.hist(GS, GS.shape[0])
+                ax2.set_title("Histograma Gastos")
+                ax3 = fig.add_subplot(gd[1,1])
+                ax3.hist(IS, IS.shape[0])
+                ax3.set_title("Histograma Ingresos")
+                ax4 = fig.add_subplot(gd[1,2])
+                ax4.hist(BS, BS.shape[0])
+                ax4.set_title("Histograma Beneficios")
+                
+
                 if self.options_data["Axis"] == 3:
-                    plt.xticks(GS.index, rotation="vertical")
+                    ax1.set_xticks(GS.index, rotation="vertical")
                     t = np.linspace(min(BS), max(IS), 20, dtype="int").tolist()
                     t.append(0)
-                    plt.yticks(t)
+                    ax1.set_yticks(t)
+                    
+                    t1 = np.linspace(0, GS.shape[0], 20, dtype="int").tolist()
+                    ax2.set_yticks(t1)
+                    
+                    t2 = np.linspace(0, IS.shape[0], 20, dtype="int").tolist()
+                    ax3.set_yticks(t2)
+                    
+                    t3 = np.linspace(0, BS.shape[0], 20, dtype="int").tolist()
+                    ax4.set_yticks(t3)
                 elif self.options_data["Axis"] == 2:
-                    plt.xticks(GS.index[::2], rotation="vertical")
+                    ax1.set_xticks(GS.index[::2], rotation="vertical")
                     t = np.linspace(min(BS), max(IS), 10, dtype="int").tolist()
                     t.append(0)
-                    plt.yticks(t)
+                    ax1.set_yticks(t)
+                    
+                    t1 = np.linspace(0, GS.shape[0], 10, dtype="int").tolist()
+                    ax2.set_yticks(t1)
+                    
+                    t2 = np.linspace(0, IS.shape[0], 10, dtype="int").tolist()
+                    ax3.set_yticks(t2)
+                    
+                    t3 = np.linspace(0, BS.shape[0], 10, dtype="int").tolist()
+                    ax4.set_yticks(t3)
                 else:
-                    plt.xticks(GS.index[::4])
+                    ax1.set_xticks(GS.index[::4])
                     t = np.linspace(min(BS), max(IS), 5, dtype="int").tolist()
                     t.append(0)
-                    plt.yticks(t)
-                plt.show()
+                    ax1.set_yticks(t)
+                    
+                    t1 = np.linspace(0, GS.shape[0], 5, dtype="int").tolist()
+                    ax2.set_yticks(t1)
+                    
+                    t2 = np.linspace(0, IS.shape[0], 5, dtype="int").tolist()
+                    ax3.set_yticks(t2)
+                    
+                    t3 = np.linspace(0, BS.shape[0], 5, dtype="int").tolist()
+                    ax4.set_yticks(t3)
+                fig.show()
                 for _ in range(15):
                     print(self.e)
                 input(self.oli.rjust(round(self.width / 2) + 15))
