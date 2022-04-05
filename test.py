@@ -12,7 +12,11 @@ import pickle
 
 record = pd.read_pickle("record.pkl")
 
-c = pd.concat((record["Gastos1"], record["Gastos2"], record["Gastos3"]))
-print(c)
-plt.hist(c, c.shape[0], (c.min(), c.max()))
-plt.show()
+with open("options.pkl", "rb") as op:
+    options_data = pickle.load(op)
+    
+options_data["maxG"] = 20
+print(options_data)
+
+with open("options.pkl", "wb") as op:
+    pickle.dump(options_data, op)

@@ -68,7 +68,7 @@ class App:
         for i in range(5):
             print(self.e)
         
-        self.opciones(["Mostrar Cryptos, Actual: " + str(self.options_data["Crypto"]), "Opciones de indices, Actual: " + str(self.options_data["Axis"])])
+        self.opciones(["Mostrar Cryptos, Actual: " + str(self.options_data["Crypto"]), "Opciones de indices, Actual: " + str(self.options_data["Axis"]), "Objetivo Máximo de Gasto, Actual: " + str(self.options_data["maxG"])])
         self.ask = input(self.o.rjust(round(self.width / 2) + 5, " "))
         if self.ask.lower() == "a":
             self.options_data["Crypto"] = not self.options_data["Crypto"]
@@ -80,6 +80,10 @@ class App:
             if ask1 == "1" or ask1 == "2" or ask1 == "3":
                 self.options_data["Axis"] = int(ask1)
         elif self.ask.lower() == "c":
+            iu = "Nueva cantidad: "
+            self.ask1 = input(iu.rjust(round(self.width / 2) + 5, " "))
+            self.options_data["maxG"] = float(self.ask1)
+        elif self.ask.lower() == "d":
             self.status = 1
         else:
             self.status = 0
@@ -412,7 +416,7 @@ class App:
                 SM["Gastos Totales"].loc[i] = round(G[C == i].sum(), 2)
                 SM["Media de Gasto"].loc[i] = round(G[C == i].mean(), 2)
                 SM["Desviación Típica"].loc[i] = round(G[C == i].std(), 2)
-                SM["Media Semanal"].loc[i] = round(G[C == i].sum() / len(C), 2)
+                SM["Media Semanal"].loc[i] = round(G[C == i].sum() / self.record.shape[0], 2)
                 SM["Porcentaje del Total"].loc[i] =  round((G[C == i].sum() / G.sum()) * 100, 2)
             SM = SM[SM["Gastos Totales"] != 0.00]
             C1 = pd.concat([self.record.Concepto_1, self.record.Concepto_2]).to_numpy()
@@ -422,7 +426,7 @@ class App:
                 SM1["Ingresos Totales"].loc[i] = round(I[C1 == i].sum(), 2)
                 SM1["Media de Ingresos"].loc[i] = round(I[C1 == i].mean(), 2)
                 SM1["Desviación Típica"].loc[i] = round(I[C1 == i].std(), 2)
-                SM1["Media Semanal"].loc[i] = round(I[C1 == i].sum() / len(C1), 2)
+                SM1["Media Semanal"].loc[i] = round(I[C1 == i].sum() / self.record.shape[0], 2)
                 SM1["Porcentaje del Total"].loc[i] =  round((I[C1 == i].sum() / I.sum()) * 100, 2)
             SM1= SM1[SM1["Ingresos Totales"] != 0.00]           
             self.opciones(["Datos", "Gráfica"])
@@ -460,6 +464,8 @@ class App:
             GS = self.record.Gastos1 + self.record.Gastos2 + self.record.Gastos3
             IS = self.record.Ingresos1 + self.record.Ingresos2
             BS = IS - GS
+            combined_max = max([max(GS), max(IS), max(BS), self.options_data["maxG"]])
+            combined_min = min([min(GS), min(IS), min(BS)])
             os.system("cls")
             self.opciones(["Datos", "Gráfica"])
             self.ask = input(self.o.rjust(round(self.width / 2) + 5, " "))
@@ -491,6 +497,7 @@ class App:
                 ax1.plot(GS.index, GS, label="Gastos Totales")
                 ax1.plot(IS.index, IS, label="Ingresos Totales")
                 ax1.plot(BS.index, BS, label="Benficios Totales" )
+                ax1.plot(GS.index, self.options_data["maxG"] * np.ones(len(GS.index)), label="Objetivo de Gasto")
                 ax1.set_ylabel("Euros")
                 ax1.set_xlabel("Tiempo")
                 ax1.legend()
@@ -508,7 +515,7 @@ class App:
 
                 if self.options_data["Axis"] == 3:
                     ax1.set_xticks(GS.index, rotation="vertical")
-                    t = np.linspace(min(BS), max(IS), 20, dtype="int").tolist()
+                    t = np.linspace(combined_min, combined_max, 20, dtype="int").tolist()
                     t.append(0)
                     ax1.set_yticks(t)
                     
@@ -522,7 +529,7 @@ class App:
                     ax4.set_yticks(t3)
                 elif self.options_data["Axis"] == 2:
                     ax1.set_xticks(GS.index[::2], rotation="vertical")
-                    t = np.linspace(min(BS), max(IS), 10, dtype="int").tolist()
+                    t = np.linspace(combined_min, combined_max, 10, dtype="int").tolist()
                     t.append(0)
                     ax1.set_yticks(t)
                     
@@ -536,7 +543,7 @@ class App:
                     ax4.set_yticks(t3)
                 else:
                     ax1.set_xticks(GS.index[::4])
-                    t = np.linspace(min(BS), max(IS), 5, dtype="int").tolist()
+                    t = np.linspace(combined_min, combined_max, 5, dtype="int").tolist()
                     t.append(0)
                     ax1.set_yticks(t)
                     
