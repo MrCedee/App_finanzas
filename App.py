@@ -122,6 +122,7 @@ class App:
                 _ = ["="] * len(j)
                 l.extend(_)
                 l.append(" ")
+            l.pop()
             print(m.center(self.width))
             print("".join(l).center(self.width))
             print(" ")
