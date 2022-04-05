@@ -434,7 +434,9 @@ class App:
             self.ask = input(self.o.rjust(round(self.width / 2) + 5, " "))
             os.system("cls")
             if self.ask.lower() == "a":
+                SM = SM.sort_values(by=["Gastos Totales"], ascending=False)
                 print(tabulate(SM, headers='keys', tablefmt='pretty'))
+                SM1 = SM1.sort_values(by=["Ingresos Totales"], ascending=False)
                 print(tabulate(SM1, headers='keys', tablefmt='pretty'))
                 for i in range(15):
                     print(self.e)
@@ -456,7 +458,7 @@ class App:
             elif self.ask == "c":
                 self.state = 2
             else:
-                self.k = 0
+                self.state = 0
 
     def g_i(self):
         self.state = 3
