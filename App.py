@@ -431,15 +431,13 @@ class App:
                 c = []
                 for i in range(len(self.record.columns)):      
                     if i != 0 and c[i - 1] == "":
-                        c.append(0)
+                        c.append(float(0))
                         continue
                     j = self.record.columns[i]
                     v1 = input(j.rjust(round(self.width / 2) + 5, " ") + ": ")
                     if self.record[j].dtype == "string":
                         c.append(v1)
                     else:
-                        if v1 == "":
-                            v1 = 0
                         try:
                             if float(v1) != float(0):
                                 if i < 11:
@@ -454,22 +452,22 @@ class App:
                                             v1 = float(0)
                                             c[i-1] = ""
                                     else:
-                                        pr = "banco: "
+                                        pr = "Porcentaje a Capital de Banco si no inserta nada o un valor no válido no se añadirá el dato: "
                                         v2 = input(pr.rjust(round(self.width / 2) + 5, " "))
                                         try:
-                                            capitalb += float(v2)
+                                            v2 = float(v2)
                                         except:
                                             c[i-1] = ""
                                             v1 = float(0)
-                                        if v1 != float(0):
-                                            pr = "gasto: "
-                                            v3 = input(pr.rjust(round(self.width / 2) + 5, " "))
-                                            try:
-                                                capitalg += float(v3)
-                                                v1 = float(v2) + float(v3)
-                                            except:
-                                                v1 = float(0) 
-                                                c[i-1] = ""
+                                        if v2 > 100 or v2<0:
+                                            print("Hola")
+                                            c[i-1] = ""
+                                            v1 = float(0)
+                                        else:
+                                            banco = v2 / 100
+                                            gasto = 1 - banco
+                                            capitalb += banco*float(v1)
+                                            capitalg += gasto*float(v1)
                                 elif i == 11:
                                     if c[i - 1] == "b a g":
                                         capitalb -= float(v1)
