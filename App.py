@@ -67,6 +67,7 @@ class App:
         os.system("cls")
         self.state = 2
         while self.state != 0 and self.state != 1:
+            os.system("cls")
             self.state = 2
             for i in range(5):
                 print(self.e)
@@ -402,36 +403,40 @@ class App:
                 self.state = 0        
                 
     def customize_new(self):
-        self.status = 3
-        while self.status != 2 and self.status != 0:
-            self.status = 3
+        self.state = 3
+        while self.state != 2 and self.state != 0:
+            self.state = 3
             os.system("cls")
             self.opciones(["Crear nueva semana"])
             v = input(self.o.rjust(round(self.width / 2) + 5, " ") + ": ")
             if v.lower() == "a":
+                os.system("cls")
                 delta = np.timedelta64(1, 'W')
                 day = np.datetime64(self.record.index[-1], "D") + delta
                 capitalb = self.record["Capital bancario"].iloc[-1]
                 capitalg = self.record["Capital gasto"].iloc[-1]
                 capitala = self.record["Capital ahorrado"].iloc[-1]
                 C = pd.concat([self.record.Concepto1, self.record.Concepto2, self.record.Concepto3]).to_numpy()
+                C = C[C != ""]
                 C = pd.DataFrame(np.unique(C), columns=["Gastos"])
                 G = pd.concat([self.record.Concepto_1, self.record.Concepto_2]).to_numpy()
+                G = G[G != ""]
                 G = pd.DataFrame(np.unique(G), columns=["Ingresos"])
                 G = tabulate(G, headers='keys', tablefmt='pretty')
                 print(tabulate(C, headers='keys', tablefmt='pretty'))
                 print(G.ljust(round(self.width / 2) + 5, " "))
-                for i in range(10):
+                print("INSERTE DATOS VÁLIDOS, SI NO LO HACE SE INSERTARÁ 0 para los valores numérico y '' para los conceptos".center(self.width))
+                for i in range(8):
                     print(self.e)
                 c = []
-                for i in range(len(self.record.columns)):
+                for i in range(len(self.record.columns)):      
                     if i != 0 and c[i - 1] == "":
                         c.append(0)
                         continue
                     j = self.record.columns[i]
                     v1 = input(j.rjust(round(self.width / 2) + 5, " ") + ": ")
                     if self.record[j].dtype == "string":
-                        c.append(v1.strip())
+                        c.append(v1)
                     else:
                         if v1 == "":
                             v1 = 0
@@ -446,6 +451,7 @@ class App:
                                         elif v2.lower() == "g":
                                             capitalg -= float(v1)
                                         else:
+                                            v1 = float(0)
                                             c[i-1] = ""
                                     else:
                                         pr = "banco: "
@@ -454,12 +460,16 @@ class App:
                                             capitalb += float(v2)
                                         except:
                                             c[i-1] = ""
-                                        pr = "gasto: "
-                                        v2 = input(pr.rjust(round(self.width / 2) + 5, " "))
-                                        try:
-                                            capitalg += float(v2)
-                                        except: 
-                                            c[i-1] = ""
+                                            v1 = float(0)
+                                        if v1 != float(0):
+                                            pr = "gasto: "
+                                            v3 = input(pr.rjust(round(self.width / 2) + 5, " "))
+                                            try:
+                                                capitalg += float(v3)
+                                                v1 = float(v2) + float(v3)
+                                            except:
+                                                v1 = float(0) 
+                                                c[i-1] = ""
                                 elif i == 11:
                                     if c[i - 1] == "b a g":
                                         capitalb -= float(v1)
@@ -468,15 +478,16 @@ class App:
                                         capitalg -= float(v1)
                                         capitalb += float(v1)
                                     else:
+                                        v1 = float(0)
                                         c[i-1] = ""
-                                c.append(float(v1))
-                                if j == "Ahorro":
-                                    capitalb -= float(v1)
-                                    capitala += float(v1)
-                                    break
+                            c.append(float(v1))
+                            if j == "Ahorro":
+                                capitalb -= float(v1)
+                                capitala += float(v1)
+                                break
                         except:
                             c.append(float(0))
-                            if j != "Ahorro":
+                            if i <= 11:
                                 c[i-1] = ""
                             else:
                                 break
@@ -487,9 +498,9 @@ class App:
                 self.record.loc[day] = c
                 os.system("cls")
             elif v.lower() == "b":
-                self.status = 2
+                self.state = 2
             else:
-                self.status = 0
+                self.state = 0
                             
     def customize(self):
         self.state = 2
