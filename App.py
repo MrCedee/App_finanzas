@@ -72,7 +72,7 @@ class App:
             for i in range(5):
                 print(self.e)
         
-            self.opciones(["Mostrar Cryptos, Actual: " + str(self.options_data["Crypto"]), "Opciones de indices, Actual: " + str(self.options_data["Axis"]), "Objetivo Máximo de Gasto, Actual: " + str(self.options_data["maxG"])])
+            self.opciones(["Mostrar Cryptos, Actual: " + str(self.options_data["Crypto"]), "Opciones de indices, Actual: " + str(self.options_data["Axis"]), "Objetivo Máximo de Gasto, Actual: " + str(self.options_data["maxG"]), "Sensibilidad en porcentaje de los gráficos de tarta: Actual: " + str(self.options_data["Sens"]) + "%"])
             self.ask = input(self.o.rjust(round(self.width / 2) + 5, " "))
             if self.ask.lower() == "a":
                 self.options_data["Crypto"] = not self.options_data["Crypto"]
@@ -97,6 +97,20 @@ class App:
                     time.sleep(5)
                     os.system("cls")
             elif self.ask.lower() == "d":
+                iu = "Nuevo porcentaje: "
+                self.ask1 = input(iu.rjust(round(self.width / 2) + 5, " "))
+                try: 
+                    self.ask1 = float(self.ask1)
+                    if self.ask1 <= 100 and self.ask1 >= 0:
+                        self.options_data["Sens"] = self.ask1
+                except:
+                    os.system("cls")
+                    for i in range(15):
+                        print(self.e)
+                    print("Cannot convert to float".center(self.width))
+                    time.sleep(5)
+                    os.system("cls")
+            elif self.ask.lower() == "e":
                 self.state = 1
             else:
                 self.state = 0
@@ -782,7 +796,14 @@ class App:
                     figure, (ax1, ax2) = plt.subplots(2, 1)
                     p1 = list(self.crypto)
                     p1.append("Euros")
-                    ax1.pie(self.patrimonio[p1].iloc[1],  labels=p1, shadow=True, autopct='%1.1f%%', startangle=90)
+                    euros = self.patrimonio[p1].loc["Euros"]
+                    porc = self.patrimonio[p1].loc["Porcentaje"]
+                    aux = euros[porc < self.options_data["Sens"]]
+                    euros = euros[porc >= self.options_data["Sens"]]
+                    euros["Otros"] = aux.sum()
+                    print("OTRAS CRYPTOS")
+                    print(tabulate([aux.index], headers='keys', tablefmt='pretty'))
+                    ax1.pie(euros,  labels=euros.index, shadow=True, autopct='%1.1f%%', startangle=90)
                     ax1.axis('equal')
                     ax1.title.set_text(" Distribución Patrimonio")
                     for i in j.columns:
@@ -820,6 +841,9 @@ class App:
                         plt.yticks(np.linspace(min(j.min()), max(j.max()), 5, dtype="int"))
                     plt.title("Seguimiento de Capitales")
                     plt.show()
+                for _ in range(15):
+                        print(self.e)
+                input(self.oli.rjust(round(self.width / 2) + 15))
                     
             elif self.ask.lower() == "c":
                 self.state = 2
@@ -894,12 +918,17 @@ class App:
             self.patrimonio = pd.DataFrame(index=["Euros", "Dólares"])
     
     def actual_patrimonio(self):
+        p1 = list(self.crypto)
         insertion = [self.record["Capital gasto"].iloc[-1] + self.record["Capital bancario"].iloc[-1] + self.record["Capital ahorrado"].iloc[-1],0]
         insertion[1] = insertion[0]
         insertion.append(round(insertion[0]/self.deur, 2))
-        self.patrimonio["Cryptos"] = [1, round(self.patrimonio.loc["Euros"].sum(), 2), round(self.patrimonio.loc["Dólares"].sum(), 2)]
+        insertion.append(0)
+        self.patrimonio.loc["Porcentaje"] = 0
+        self.patrimonio["Cryptos"] = [1, round(self.patrimonio[p1].loc["Euros"].sum(), 2), round(self.patrimonio[p1].loc["Dólares"].sum(), 2), 0]
         self.patrimonio["Euros"] = insertion
-        self.patrimonio["Patrimonio"] = [1, round(self.patrimonio["Cryptos"].loc["Euros"] + self.patrimonio["Euros"].loc["Euros"]) , round(self.patrimonio["Cryptos"].loc["Dólares"] + self.patrimonio["Euros"].loc["Dólares"])]
+        self.patrimonio["Patrimonio"] = [1, round(self.patrimonio["Cryptos"].loc["Euros"] + self.patrimonio["Euros"].loc["Euros"]) , round(self.patrimonio["Cryptos"].loc["Dólares"] + self.patrimonio["Euros"].loc["Dólares"]), 0]
+        self.patrimonio.loc["Porcentaje"] = np.array(self.patrimonio.loc["Euros"])* 100 / np.array(self.patrimonio["Patrimonio"].loc["Euros"])
+        self.patrimonio.loc["Porcentaje"] = self.patrimonio.loc["Porcentaje"].astype("float").round(2)
 
     def check_progress(self):
         os.system("cls")
