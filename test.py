@@ -12,4 +12,10 @@ import pickle
 import sys
 
 record = pd.read_pickle("record.pkl")
-float("")
+
+with open("options.pkl", "rb") as op:
+    options_data = pickle.load(op)
+    
+options_data["Sens"] = 2
+with open("options.pkl", "wb") as op:
+    pickle.dump(options_data, op)

@@ -616,15 +616,29 @@ class App:
                 input(self.oli.rjust(round(self.width / 2) + 15))
                 os.system("cls")
             elif self.ask == "b":
+                aux = SM["Gastos Totales"]
+                Others = SM[SM["Porcentaje del Total"] < self.options_data["Sens"]]
+                SM_ = aux[SM["Porcentaje del Total"] >= self.options_data["Sens"]]
+                SM_.loc["Otros"] = aux.sum() - SM_.sum()
+                print("Otros Gastos")
+                print(tabulate(pd.DataFrame(Others["Porcentaje del Total"]), headers='keys', tablefmt='pretty'))
+                
+                aux1 = SM1["Ingresos Totales"]
+                Others1 = SM1[SM1["Porcentaje del Total"] < self.options_data["Sens"]]
+                SM_1 = aux1[SM1["Porcentaje del Total"] >= self.options_data["Sens"]]
+                SM_1.loc["Otros"] = aux1.sum() - SM_1.sum()
+                print("Otros Ingresos")
+                print(tabulate(pd.DataFrame(Others1["Porcentaje del Total"]), headers='keys', tablefmt='pretty'))
+                
                 figure, (ax1, ax2) = plt.subplots(1, 2)
-                ax1.pie(SM["Gastos Totales"],  labels=SM.index, shadow=True, autopct='%1.1f%%', startangle=90)
+                ax1.pie(SM_,  labels=SM_.index, shadow=True, autopct='%1.1f%%', startangle=90)
                 ax1.axis('equal')
                 ax1.title.set_text("Gastos Totales")
-                ax2.pie(SM1["Ingresos Totales"],  labels=SM1.index, shadow=True, autopct='%1.1f%%', startangle=90)
+                ax2.pie(SM_1,  labels=SM_1.index, shadow=True, autopct='%1.1f%%', startangle=90)
                 ax2.axis('equal')
                 ax2.title.set_text("Ingresos Totales")
                 figure.show()
-                for _ in range(15):
+                for _ in range(5):
                     print(self.e)
                 input(self.oli.rjust(round(self.width / 2) + 15))
                 os.system("cls")
