@@ -65,28 +65,40 @@ class App:
     
     def options(self):
         os.system("cls")
-        for i in range(5):
-            print(self.e)
+        self.state = 2
+        while self.state != 0 and self.state != 1:
+            self.state = 2
+            for i in range(5):
+                print(self.e)
         
-        self.opciones(["Mostrar Cryptos, Actual: " + str(self.options_data["Crypto"]), "Opciones de indices, Actual: " + str(self.options_data["Axis"]), "Objetivo Máximo de Gasto, Actual: " + str(self.options_data["maxG"])])
-        self.ask = input(self.o.rjust(round(self.width / 2) + 5, " "))
-        if self.ask.lower() == "a":
-            self.options_data["Crypto"] = not self.options_data["Crypto"]
-        elif self.ask.lower() == "b":
-            t = ["Cantidad de indices en Gráficos reducida: 1", "Cantidad de indices media: 2", "Cantidad de indices total: 3"]
-            for i in t:
-                print(i.center(self.width))
-            ask1 = input(self.o.rjust(round(self.width / 2) + 5, " "))
-            if ask1 == "1" or ask1 == "2" or ask1 == "3":
-                self.options_data["Axis"] = int(ask1)
-        elif self.ask.lower() == "c":
-            iu = "Nueva cantidad: "
-            self.ask1 = input(iu.rjust(round(self.width / 2) + 5, " "))
-            self.options_data["maxG"] = float(self.ask1)
-        elif self.ask.lower() == "d":
-            self.status = 1
-        else:
-            self.status = 0
+            self.opciones(["Mostrar Cryptos, Actual: " + str(self.options_data["Crypto"]), "Opciones de indices, Actual: " + str(self.options_data["Axis"]), "Objetivo Máximo de Gasto, Actual: " + str(self.options_data["maxG"])])
+            self.ask = input(self.o.rjust(round(self.width / 2) + 5, " "))
+            if self.ask.lower() == "a":
+                self.options_data["Crypto"] = not self.options_data["Crypto"]
+            elif self.ask.lower() == "b":
+                t = ["Cantidad de indices en Gráficos reducida: 1", "Cantidad de indices media: 2", "Cantidad de indices total: 3"]
+                for i in t:
+                    print(i.center(self.width))
+                ask1 = input(self.o.rjust(round(self.width / 2) + 5, " "))
+                os.system("cls")
+                if ask1 == "1" or ask1 == "2" or ask1 == "3":
+                    self.options_data["Axis"] = int(ask1)
+            elif self.ask.lower() == "c":
+                iu = "Nueva cantidad: "
+                self.ask1 = input(iu.rjust(round(self.width / 2) + 5, " "))
+                try: 
+                    self.options_data["maxG"] = float(self.ask1)
+                except:
+                    os.system("cls")
+                    for i in range(15):
+                        print(self.e)
+                    print("Cannot convert to float".center(self.width))
+                    time.sleep(5)
+                    os.system("cls")
+            elif self.ask.lower() == "d":
+                self.state = 1
+            else:
+                self.state = 0
             
         with open("options.pkl", "wb") as op:
             pickle.dump(self.options_data, op)
@@ -122,6 +134,7 @@ class App:
                 _ = ["="] * len(j)
                 l.extend(_)
                 l.append(" ")
+            l.pop()
             print(m.center(self.width))
             print("".join(l).center(self.width))
             print(" ")
@@ -136,17 +149,266 @@ class App:
         print(" ")
         print(" ")
 
-    def customize(self):
-        self.state = 2
-        while self.state != 1 and self.state != 0:
-            self.state = 2
-            if self.options_data["Crypto"]:
-                self.opciones(["Nueva Semana", "Semana Anterior", "Cryptos"])
-            else:
-                self.opciones(["Nueva Semana", "Semana Anterior"])
-            self.ask = input(self.o.rjust(round(self.width / 2) + 5, " "))
+    def customize_cryptos(self):
+        self.state = 3
+        while self.state != 2 and self.state != 0:
+            self.state = 3
             os.system("cls")
+            self.opciones(["Elegir Crypto"])
+            self.ask = input(self.o.rjust(round(self.width / 2) + 5, " "))
             if self.ask.lower() == "a":
+                aux = pd.DataFrame(self.cuantities, index=self.crypto , columns=["Cryptos"])
+                print(tabulate(aux, headers='keys', tablefmt='pretty'))
+                p = "¿Que criptomoneda quieres modificar? "
+                ask1 = input(p.rjust(round(self.width / 2) + 5, " "))
+                if ask1 in self.crypto:
+                    inde = self.crypto.index(ask1)
+                    cass = "¿Cantidad adicional? "
+                    ask2 = input(cass.rjust(round(self.width / 2) + 5, " "))
+                    try:
+                        self.cuantities[inde] += float(ask2)
+                    except:
+                        os.system("cls")
+                        for i in range(15):
+                            print(self.e)
+                        print("Cannot convert to float".center(self.width))
+                        time.sleep(5)
+                        os.system("cls")
+            elif self.ask.lower() == "b":
+                self.state = 2
+            else:
+                self.state = 0
+                
+    def customize_old(self):
+        self.state = 3
+        while self.state != 0 and self.state != 2:
+            self.state = 3
+            os.system("cls")
+            self.p_table()
+            j = "Escriba la fecha de los datos a modificar siguiedo el formato YYYY-MM-DD, pulse b para volver atrás y enter para salir de la app"
+            v = input(j.rjust(round(self.width / 2) + 5, " ") + ": ")
+            if v in self.record.index:
+                part = self.record.loc[v]
+                print(self.e)
+                print(self.e)
+                v1 = "ad"
+                while v1.lower() != "f":
+                    os.system("cls")
+                    self.p_table()
+                    print("DATOS NO ACTUALIZADOS".center(self.width))
+                    print(self.e)
+                    j = "Modificar (g)astos, (i)ngresos, (t)raspaso, (a)horro o (f)inalizar"
+                    v1 = input(j.rjust(round(self.width / 2) + 5, " ") + ": ")
+                    if v1.lower() == "g":
+                        print(self.e)
+                        j = "Inserte cantidad adicional de gasto1, si no inserta nada o inserta un elemento no convertible a float se mantendra la actual"
+                        continue_ = True
+                        v2 = input(j.rjust(round(self.width / 2) + 5, " ") + ": ")
+                        try:
+                            float(v2)
+                        except:
+                            continue_ = False
+                        if continue_:
+                            print(self.e)
+                            pr = "Capital de (b)anco o (g)asto, si no inserta nada o un valor no válido no se añadirá el dato: "
+                            h1 = input(pr.rjust(round(self.width / 2) + 5, " "))
+                            if h1.lower() == "b":
+                                part["Capital bancario"] -= float(v2)
+                                part["Gastos1"] += float(v2)
+                            if h1.lower() == "g":
+                                part["Capital gasto"] -= float(v2)
+                                part["Gastos1"] += float(v2)
+                            print(self.e)
+                            if h1.lower() == "b" or h1.lower() =="g":
+                                j = "Concepto, si no añade nada se ajustará como Indefinido: "
+                                v3 = input(j.rjust(round(self.width / 2) + 5, " ") + ": ")
+                                if v3.strip() != "":
+                                    part["Concepto1"] = v3
+                                else: 
+                                    part["Concepto1"] = "Indefinido"
+                        print(self.e)
+
+                        j = "Inserte cantidad adicional de gasto2, si no inserta nada o inserta un elemento no convertible a float se mantendra la actual"
+                        continue_ = True
+                        v2 = input(j.rjust(round(self.width / 2) + 5, " ") + ": ")
+                        try:
+                            float(v2)
+                        except:
+                            continue_ = False
+                        if continue_:
+                            print(self.e)
+                            pr = "Capital de (b)anco o (g)asto, si no inserta nada o un valor no válido no se añadirá el dato: "
+                            h1 = input(pr.rjust(round(self.width / 2) + 5, " "))
+                            if h1.lower() == "b":
+                                part["Capital bancario"] -= float(v2)
+                                part["Gastos2"] += float(v2)
+                            if h1.lower() == "g":
+                                part["Capital gasto"] -= float(v2)
+                                part["Gastos2"] += float(v2) 
+                            print(self.e)
+                            if h1.lower() == "b" or h1.lower() =="g":
+                                j = "Concepto, si no añade nada se ajustará como Indefinido: "
+                                v3 = input(j.rjust(round(self.width / 2) + 5, " ") + ": ")
+                                if v3.strip() != "":
+                                    part["Concepto2"] = v3
+                                else: 
+                                    part["Concepto2"] = "Indefinido"
+                        print(self.e)
+
+                        j = "Inserte cantidad adicional de gasto3, si no inserta nada o inserta un elemento no convertible a float se mantendra la actual"
+                        continue_ = True
+                        v2 = input(j.rjust(round(self.width / 2) + 5, " ") + ": ")
+                        try:
+                            float(v2)
+                        except:
+                            continue_ = False
+                        if continue_:
+                            print(self.e)
+                            pr = "Capital de (b)anco o (g)asto, si no inserta nada o un valor no válido no se añadirá el dato: "
+                            h1 = input(pr.rjust(round(self.width / 2) + 5, " "))
+                            if h1.lower() == "b":
+                                part["Capital bancario"] -= float(v2)
+                                part["Gastos3"] += float(v2)
+                            if h1.lower() == "g":
+                                part["Capital gasto"] -= float(v2)
+                                part["Gastos3"] += float(v2)
+                            print(self.e)
+                            if h1.lower() == "b" or h1.lower() =="g":
+                                j = "Concepto, si no añade nada se ajustará como Indefinido: "
+                                v3 = input(j.rjust(round(self.width / 2) + 5, " ") + ": ")
+                                if v3.strip() != "":
+                                    part["Concepto3"] = v3
+                                else: 
+                                    part["Concepto3"] = "Indefinido"
+                        os.system("cls")
+                    elif v1.lower() == "i":
+                        j = "Inserte cantidad adicional de Ingreso1, si no inserta nada o inserta un elemento no convertible a float se mantendra la actual"
+                        continue_ = True
+                        v2 = input(j.rjust(round(self.width / 2) + 5, " ") + ": ")
+                        try:
+                            float(v2)
+                        except:
+                            continue_ = False
+                        if continue_:
+                            print(self.e)
+                            pr = "Porcentaje a Capital de Banco si no inserta nada o un valor no válido no se añadirá el dato: "
+                            continue__ = True
+                            h1 = input(pr.rjust(round(self.width / 2) + 5, " "))
+                            try:
+                                h1 = float(h1)
+                            except:
+                                continue__ = False
+                            if continue__:
+                                if h1 < 100 and h1 > 0:
+                                    banco = h1/100
+                                    gasto = 1 - banco
+                                    part["Capital bancario"] += float(v2) * banco
+                                    part["Ingresos1"] += float(v2)
+                                    part["Capital gasto"] += float(v2) * gasto
+                                    print(self.e)
+                                    j = "Concepto, si no añade nada se ajustará como Indefinido: "
+                                    v3 = input(j.rjust(round(self.width / 2) + 5, " ") + ": ")
+                                    if v3.strip() != "":
+                                        part["Concepto_1"] = v3
+                                    else: 
+                                        part["Concepto_1"] = "Indefinido"
+                        print(self.e)
+
+                        j = "Inserte cantidad adicional de Ingreso2, si no inserta nada o inserta un elemento no convertible a float se mantendra la actual"
+                        continue_ = True
+                        v2 = input(j.rjust(round(self.width / 2) + 5, " ") + ": ")
+                        try:
+                            float(v2)
+                        except:
+                            continue_ = False
+                        if continue_:
+                            print(self.e)
+                            pr = "Porcentaje a Capital de Banco si no inserta nada o un valor no válido no se añadirá el dato: "
+                            continue__ = True
+                            h1 = input(pr.rjust(round(self.width / 2) + 5, " "))
+                            try:
+                                h1 = float(h1)
+                            except:
+                                continue__ = False
+                            if continue__:
+                                
+                                if h1 < 100 and h1 > 0:
+                                    banco = h1/100
+                                    gasto = 1 - banco
+                                    part["Capital bancario"] += float(v2) * banco
+                                    part["Ingresos2"] += float(v2)
+                                    part["Capital gasto"] += float(v2) * gasto
+                                    print(self.e)
+                                    j = "Concepto, si no añade nada se ajustará como Indefinido: "
+                                    v3 = input(j.rjust(round(self.width / 2) + 5, " ") + ": ")
+                                    if v3.strip() != "":
+                                        part["Concepto_2"] = v3
+                                    else: 
+                                        part["Concepto_2"] = "Indefinido"
+                        os.system("cls")
+                    elif v1.lower() == "t":
+                        print(self.e)
+                        j = "Inserte la descripción del Traspaso, si no se inserta nada o un valor no válido (Válidos: Banco a gasto [b a g], al reves [g a b], respete las minúsculas) no se realizará"
+                        v2 = input(j.rjust(round(self.width / 2) + 5, " ") + ": ")
+                        if v2.strip() != "" and (v2.strip() == "b a g" or v2.strip() == "g a b"):
+                            part["Descripción"] = v2
+                            print(self.e)
+                            j = "Inserte la cantidad"
+                            continue_ = True
+                            v3 = input(j.rjust(round(self.width / 2) + 5, " ") + ": ")
+                            try:
+                                part["Traspasos"] += float(v2)
+                            except: 
+                                continue_ = False
+                            if continue_:
+                                if v2 == "b a g":
+                                    part["Capital bancario"] -= float(v3)
+                                    part["Capital gasto"] += float(v3)
+                                else:
+                                    part["Capital bancario"] += float(v3)
+                                    part["Capital gasto"] -= float(v3)
+                        os.system("cls")
+                    elif v1.lower() == "a":
+                        print(self.e)
+                        j = "Inserte la cantidad adicional"
+                        continue_ = True
+                        v2 = input(j.rjust(round(self.width / 2) + 5, " ") + ": ")
+                        try:
+                            float(v2)
+                        except:
+                            continue_ = False
+                        if continue_:
+                            part["Ahorro"] += float(v2)
+                            part["Capital bancario"] -= float(v2)
+                            part["Capital ahorrado"] += float(v2)
+                        os.system("cls")
+                    else:
+                        v1 = "f"
+                
+
+                partition = self.record.loc[v:]
+                dcb = part["Capital bancario"] - self.record["Capital bancario"].loc[v]
+                dcg = part["Capital gasto"] - self.record["Capital gasto"].loc[v]
+                dca = part["Capital ahorrado"] - self.record["Capital ahorrado"].loc[v]
+                partition["Capital bancario"] += dcb
+                partition["Capital gasto"] += dcg
+                partition["Capital ahorrado"] += dca
+                partition.loc[v] = part
+                self.record.loc[v:] = partition  
+                os.system("cls")  
+            elif v.lower() == "b":
+                self.state = 2
+            elif v.strip() == "":
+                self.state = 0        
+                
+    def customize_new(self):
+        self.status = 3
+        while self.status != 2 and self.status != 0:
+            self.status = 3
+            os.system("cls")
+            self.opciones(["Crear nueva semana"])
+            v = input(self.o.rjust(round(self.width / 2) + 5, " ") + ": ")
+            if v.lower() == "a":
                 delta = np.timedelta64(1, 'W')
                 day = np.datetime64(self.record.index[-1], "D") + delta
                 capitalb = self.record["Capital bancario"].iloc[-1]
@@ -167,190 +429,87 @@ class App:
                         c.append(0)
                         continue
                     j = self.record.columns[i]
-                    v = input(j.rjust(round(self.width / 2) + 5, " ") + ": ")
+                    v1 = input(j.rjust(round(self.width / 2) + 5, " ") + ": ")
                     if self.record[j].dtype == "string":
-                        c.append(v)
+                        c.append(v1.strip())
                     else:
-                        if v == "":
-                            v = 0
-                        if float(v) != float(0):
-                            if i < 11:
-                                if i < 6:
-                                    pr = "b o g: "
-                                    v1 = input(pr.rjust(round(self.width / 2) + 5, " "))
-                                    if v1.lower() == "b":
-                                        capitalb -= float(v)
-                                    if v1.lower() == "g":
-                                        capitalg -= float(v)
-                                else:
-                                    pr = "banco: "
-                                    v1 = float(input(pr.rjust(round(self.width / 2) + 5, " ")))
-                                    capitalb += v1
-                                    pr = "gasto: "
-                                    v1 = float(input(pr.rjust(round(self.width / 2) + 5, " ")))
-                                    capitalg += v1
-                            if i == 11:
-                                if c[i - 1] == "b a g":
-                                    capitalb -= float(v)
-                                    capitalg += float(v)
-                                elif c[i - 1] == "g a b":
-                                    capitalg -= float(v)
-                                    capitalb += float(v)
-
-                        c.append(float(v))
-                    if j == "Ahorro":
-                        capitalb -= float(v)
-                        capitala += float(v)
-                        break
+                        if v1 == "":
+                            v1 = 0
+                        try:
+                            if float(v1) != float(0):
+                                if i < 11:
+                                    if i < 6:
+                                        pr = "b o g: "
+                                        v2 = input(pr.rjust(round(self.width / 2) + 5, " "))
+                                        if v2.lower() == "b":
+                                            capitalb -= float(v1)
+                                        elif v2.lower() == "g":
+                                            capitalg -= float(v1)
+                                        else:
+                                            c[i-1] = ""
+                                    else:
+                                        pr = "banco: "
+                                        v2 = input(pr.rjust(round(self.width / 2) + 5, " "))
+                                        try:
+                                            capitalb += float(v2)
+                                        except:
+                                            c[i-1] = ""
+                                        pr = "gasto: "
+                                        v2 = input(pr.rjust(round(self.width / 2) + 5, " "))
+                                        try:
+                                            capitalg += float(v2)
+                                        except: 
+                                            c[i-1] = ""
+                                elif i == 11:
+                                    if c[i - 1] == "b a g":
+                                        capitalb -= float(v1)
+                                        capitalg += float(v1)
+                                    elif c[i - 1] == "g a b":
+                                        capitalg -= float(v1)
+                                        capitalb += float(v1)
+                                    else:
+                                        c[i-1] = ""
+                                c.append(float(v1))
+                                if j == "Ahorro":
+                                    capitalb -= float(v1)
+                                    capitala += float(v1)
+                                    break
+                        except:
+                            c.append(float(0))
+                            if j != "Ahorro":
+                                c[i-1] = ""
+                            else:
+                                break
+                
                 c.append(capitalb)
                 c.append(capitalg)
                 c.append(capitala)
                 self.record.loc[day] = c
                 os.system("cls")
+            elif v.lower() == "b":
+                self.status = 2
+            else:
+                self.status = 0
+                            
+    def customize(self):
+        self.state = 2
+        while self.state != 1 and self.state != 0:
+            self.state = 2
+            if self.options_data["Crypto"]:
+                self.opciones(["Nueva Semana", "Semana Anterior", "Cryptos"])
+            else:
+                self.opciones(["Nueva Semana", "Semana Anterior"])
+            self.ask = input(self.o.rjust(round(self.width / 2) + 5, " "))
+            os.system("cls")
+            if self.ask.lower() == "a":
+                self.customize_new()
+                os.system("cls")
             elif self.ask.lower() == "b":
-                self.p_table()
-                j = "Escriba la fecha de los datos a modificar siguiedo el formato YYYY-MM-DD"
-                v = input(j.rjust(round(self.width / 2) + 5, " ") + ": ")
-                if v in self.record.index:
-                    part = self.record.loc[v]
-                    print(self.e)
-                    print(self.e)
-                    j = "Modificar (g)astos, (i)ngresos, (t)raspaso o (a)horro"
-                    v1 = input(j.rjust(round(self.width / 2) + 5, " ") + ": ")
-                    if v1 == "g" or v1 == "G":
-                        print(self.e)
-                        j = "Inserte cantidad adicional de gasto1, si no inserta nada se mantendra la actual"
-                        v2 = input(j.rjust(round(self.width / 2) + 5, " ") + ": ")
-                        if v2 != "":
-                            print(self.e)
-                            pr = "b o g: "
-                            h1 = input(pr.rjust(round(self.width / 2) + 5, " "))
-                            if h1.lower() == "b":
-                                part["Capital bancario"] -= float(v2)
-                            if h1.lower() == "g":
-                                part["Capital gasto"] -= float(v2)
-                            print(self.e)
-                            j = "Concepto"
-                            v3 = input(j.rjust(round(self.width / 2) + 5, " ") + ": ")
-                            part["Concepto1"] = v3
-                            part["Gastos1"] = float(v2) + self.record["Gastos1"].loc[v]
-                        print(self.e)
-                        j = "Inserte cantidad adicional de gasto2, si no inserta nada se mantendra la actual"
-                        v2 = input(j.rjust(round(self.width / 2) + 5, " ") + ": ")
-                        if v2 != "":
-                            print(self.e)
-                            pr = "b o g: "
-                            h1 = input(pr.rjust(round(self.width / 2) + 5, " "))
-                            if h1.lower() == "b":
-                                part["Capital bancario"] -= float(v2)
-                            if h1.lower() == "g":
-                                part["Capital gasto"] -= float(v2)
-                            print(self.e)
-                            j = "Concepto"
-                            v3 = input(j.rjust(round(self.width / 2) + 5, " ") + ": ")
-                            part["Concepto2"] = v3
-                            part["Gastos2"] = float(v2) + self.record["Gastos2"].loc[v]
-                        print(self.e)
-                        j = "Inserte cantidad adicional de gasto3, si no inserta nada se mantendra la actual"
-                        v2 = input(j.rjust(round(self.width / 2) + 5, " ") + ": ")
-                        if v2 != "":
-                            print(self.e)
-                            pr = "b o g: "
-                            h1 = input(pr.rjust(round(self.width / 2) + 5, " "))
-                            if h1.lower() == "b":
-                                part["Capital bancario"] -= float(v2)
-                            if h1.lower() == "g":
-                                part["Capital gasto"] -= float(v2)
-                            print(self.e)
-                            j = "Concepto"
-                            v3 = input(j.rjust(round(self.width / 2) + 5, " ") + ": ")
-                            part["Concepto3"] = v3
-                            part["Gastos3"] = float(v2) + self.record["Gastos3"].loc[v]
-                        os.system("cls")
-                    elif v1 == "i" or v1 == "I":
-                        print(self.e)
-                        j = "Inserte cantidad de Ingreso1, si no inserta nada se mantendra la actual"
-                        v2 = input(j.rjust(round(self.width / 2) + 5, " ") + ": ")
-                        if v2 != "":
-                            print(self.e)
-                            pr = "banco: "
-                            h1 = float(input(pr.rjust(round(self.width / 2) + 5, " ")))
-                            part["Capital bancario"] += h1
-                            pr = "gasto: "
-                            h1 = float(input(pr.rjust(round(self.width / 2) + 5, " ")))
-                            part["Capital gasto"] += h1
-                            print(self.e)
-                            j = "Concepto"
-                            v3 = input(j.rjust(round(self.width / 2) + 5, " ") + ": ")
-                            part["Concepto_1"] = v3
-                            part["Ingresos1"] = float(v2) + self.record["Ingresos1"].loc[v]
-                        print(self.e)
-                        j = "Inserte cantidad de Ingreso2, si no inserta nada se mantendra la actual"
-                        v2 = input(j.rjust(round(self.width / 2) + 5, " ") + ": ")
-                        if v2 != "":
-                            print(self.e)
-                            pr = "banco: "
-                            h1 = float(input(pr.rjust(round(self.width / 2) + 5, " ")))
-                            part["Capital bancario"] += h1
-                            pr = "gasto: "
-                            h1 = float(input(pr.rjust(round(self.width / 2) + 5, " ")))
-                            part["Capital gasto"] += h1
-                            print(self.e)
-                            j = "Concepto"
-                            v3 = input(j.rjust(round(self.width / 2) + 5, " ") + ": ")
-                            part["Concepto_2"] = v3
-                            part["Ingresos2"] = float(v2) + self.record["Ingresos2"].loc[v]
-                        os.system("cls")
-                    elif v1 == "t" or v1 == "T":
-                        print(self.e)
-                        j = "Inserte la descripción"
-                        v2 = input(j.rjust(round(self.width / 2) + 5, " ") + ": ")
-                        if v2 == "b a g" or v2 == "g a b":
-                            part["Descripción"] = v2
-                            print(self.e)
-                            j = "Inserte la cantidad"
-                            v3 = input(j.rjust(round(self.width / 2) + 5, " ") + ": ")
-                            part["Traspasos"] = float(v2) + self.record["Traspasos"].loc[v]
-                            if v2 == "b a g":
-                                part["Capital bancario"] -= float(v3)
-                                part["Capital gasto"] += float(v3)
-                            else:
-                                part["Capital bancario"] += float(v3)
-                                part["Capital gasto"] -= float(v3)
-                        os.system("cls")
-                    elif v1 == "a" or v1 == "A":
-                        print(self.e)
-                        j = "Inserte la cantidad adicional"
-                        v2 = input(j.rjust(round(self.width / 2) + 5, " ") + ": ")
-                        part["Ahorro"] = float(v2) + self.record["Ahorro"].loc[v]
-                        part["Capital bancario"] -= float(v2)
-                        part["Capital ahorrado"] += float(v2)
-                        os.system("cls")
-
-                    partition = self.record.loc[v:]
-
-                    dcb = part["Capital bancario"] - self.record["Capital bancario"].loc[v]
-                    dcg = part["Capital gasto"] - self.record["Capital gasto"].loc[v]
-                    dca = part["Capital ahorrado"] - self.record["Capital ahorrado"].loc[v]
-                    partition["Capital bancario"] += dcb
-                    partition["Capital gasto"] += dcg
-                    partition["Capital ahorrado"] += dca
-                    partition.loc[v] = part
-                    self.record.loc[v:] = partition
+                self.customize_old()
                 os.system("cls")
             elif self.ask.lower() == "c":
                 if self.options_data["Crypto"]:
-                    aux = pd.DataFrame(self.cuantities, index=self.crypto , columns=["Cryptos"])
-                    print(tabulate(aux, headers='keys', tablefmt='pretty'))
-                    for i in range(15):
-                        print(self.e)
-                    p = "¿Que criptomoneda quieres modificar? "
-                    ask1 = input(p.rjust(round(self.width / 2) + 5, " "))
-                    if ask1 in self.crypto:
-                        inde = self.crypto.index(ask1)
-                        cass = "¿Cantidad adicional? "
-                        ask2 = float(input(cass.rjust(round(self.width / 2) + 5, " ")))
-                        self.cuantities[inde] += ask2
+                    self.customize_cryptos()
                     os.system("cls")
                 else:
                     self.state = 1
@@ -385,19 +544,25 @@ class App:
                 elif "_" in j1:
                     j1 = j1.split("_")
                     os.system("cls")
-                    print(tabulate(self.record.loc[j1[0]:j1[1]], headers='keys', tablefmt='pretty'))
-                    for _ in range(15):
-                        print(self.e)
-                    input(self.oli.rjust(round(self.width / 2) + 15))
-                    os.system("cls")
+                    if j1[0] in self.record.index and j[1] in self.record.index:
+                        print(tabulate(self.record.loc[j1[0]:j1[1]], headers='keys', tablefmt='pretty'))
+                        for _ in range(15):
+                            print(self.e)
+                        input(self.oli.rjust(round(self.width / 2) + 15))
+                        os.system("cls")
                 elif "," in j1:
                     j1 = j1.split(",")
                     os.system("cls")
-                    print(tabulate(self.record.loc[j1], headers='keys', tablefmt='pretty'))
-                    for _ in range(15):
-                        print(self.e)
-                    input(self.oli.rjust(round(self.width / 2) + 15))
-                    os.system("cls")
+                    condition = True
+                    for _ in j1:
+                        if not _ in self.record.index:
+                            condition = False
+                    if condition:
+                        print(tabulate(self.record.loc[j1], headers='keys', tablefmt='pretty'))
+                        for _ in range(15):
+                            print(self.e)
+                        input(self.oli.rjust(round(self.width / 2) + 15))
+                        os.system("cls")
             elif self.ask.lower() == "b":
                 self.state = 1
                 os.system("cls")
@@ -433,7 +598,9 @@ class App:
             self.ask = input(self.o.rjust(round(self.width / 2) + 5, " "))
             os.system("cls")
             if self.ask.lower() == "a":
+                SM = SM.sort_values(by=["Gastos Totales"], ascending=False)
                 print(tabulate(SM, headers='keys', tablefmt='pretty'))
+                SM1 = SM1.sort_values(by=["Ingresos Totales"], ascending=False)
                 print(tabulate(SM1, headers='keys', tablefmt='pretty'))
                 for i in range(15):
                     print(self.e)
@@ -455,7 +622,7 @@ class App:
             elif self.ask == "c":
                 self.state = 2
             else:
-                self.k = 0
+                self.state = 0
 
     def g_i(self):
         self.state = 3
