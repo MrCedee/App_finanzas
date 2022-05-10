@@ -10,6 +10,7 @@ import requests
 from bs4 import BeautifulSoup
 import pickle 
 import time
+import warnings
 
 
 class App:
@@ -23,7 +24,7 @@ class App:
         pd.set_option("display.precision", 2)
         self.width = os.get_terminal_size()
         self.width = self.width[0]
-        self.record = pd.read_pickle("record.pkl")
+        self.record = pd.read_pickle("record_p.pkl")
         self.state = -1
         self.ask = 0
         self.o = "Option: "
@@ -39,6 +40,7 @@ class App:
         #self.cuantities = np.load("cuantities.npy")
         #self.dolar_euro()
         self.options_init()
+        warnings.filterwarnings("ignore")
         
     def dolar_euro(self):
         iri = "https://www.coingecko.com/es/monedas/tether/eur"
@@ -870,7 +872,7 @@ class App:
                 self.state = 0
 
     def p_table(self):
-        p = [self.g, self.g, self.e, tabulate(self.record, headers='keys', tablefmt='pretty'), self.e, self.g, self.g,
+        p = [self.g, self.g, self.e, self.record, self.e, self.g, self.g,
              self.e, self.e, self.e]
         for i in p:
             print(i)
