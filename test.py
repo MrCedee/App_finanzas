@@ -13,5 +13,10 @@ import sys
 
 record = pd.read_pickle("record.pkl")
 
+with open("options.pkl", "rb") as op:
+    options_data = pickle.load(op)
 
-print(record.iloc[2])
+options_data["Crypto"] = False
+
+with open("options.pkl", "wb") as op:
+    pickle.dump(options_data, op)

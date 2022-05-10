@@ -36,8 +36,8 @@ class App:
         self.deur = 0
         self.crypto = 0
         self.cuantities = 0
-        self.cuantities = np.load("cuantities.npy")
-        self.dolar_euro()
+        #self.cuantities = np.load("cuantities.npy")
+        #self.dolar_euro()
         self.options_init()
         
     def dolar_euro(self):
@@ -518,10 +518,10 @@ class App:
         self.state = 2
         while self.state != 1 and self.state != 0:
             self.state = 2
-            if self.options_data["Crypto"]:
+            """if self.options_data["Crypto"]:
                 self.opciones(["Nueva Semana", "Semana Anterior", "Cryptos"])
-            else:
-                self.opciones(["Nueva Semana", "Semana Anterior"])
+            else:"""
+            self.opciones(["Nueva Semana", "Semana Anterior"])
             self.ask = input(self.o.rjust(round(self.width / 2) + 5, " "))
             os.system("cls")
             if self.ask.lower() == "a":
@@ -531,16 +531,16 @@ class App:
                 self.customize_old()
                 os.system("cls")
             elif self.ask.lower() == "c":
-                if self.options_data["Crypto"]:
+                """if self.options_data["Crypto"]:
                     self.customize_cryptos()
                     os.system("cls")
-                else:
-                    self.state = 1
+                else:"""
+                self.state = 1
             elif self.ask.lower() == "d":
-                if self.options_data["Crypto"]:
+                """if self.options_data["Crypto"]:
                     self.state = 1
-                else:
-                    self.state = 0
+                else:"""
+                self.state = 0
             else:
                 self.state = 0
         self.rounddf()
@@ -784,14 +784,14 @@ class App:
             j["Capital Total"] = j["Capital Total"].astype("float").round(2)
             if self.ask.lower() == "a":
                 print(tabulate(pd.DataFrame(j), headers='keys', tablefmt='pretty'))
-                if self.options_data["Crypto"]:
+                """if self.options_data["Crypto"]:
                     self.actual_patrimonio()
-                    print(tabulate(self.patrimonio, headers='keys', tablefmt='pretty'))
+                    print(tabulate(self.patrimonio, headers='keys', tablefmt='pretty'))"""
                 for i in range(15):
                     print(self.e)
                 input(self.oli.rjust(round(self.width / 2) + 15))
             elif self.ask.lower() == "b":
-                if self.options_data["Crypto"]:
+                """if self.options_data["Crypto"]:
                     self.actual_patrimonio()
                     figure, (ax1, ax2) = plt.subplots(2, 1)
                     p1 = list(self.crypto)
@@ -823,24 +823,24 @@ class App:
                         ax2.set_yticks(np.linspace(min(j.min()), max(j.max()), 5, dtype="int"))
                     ax2.title.set_text("Seguimiento Capitales")
                     figure.show()
+                else:"""
+                for i in j.columns:
+                    plt.plot(j.index, j[i], label=i)
+                plt.grid()
+                plt.legend()
+                plt.ylabel("Euros")
+                plt.xlabel("Tiempo")
+                if self.options_data["Axis"] == 3:
+                    plt.xticks(j.index)
+                    plt.yticks(np.linspace(min(j.min()), max(j.max()), 20, dtype="int"))
+                elif self.options_data["Axis"] == 2:
+                    plt.xticks(j.index[::2])
+                    plt.yticks(np.linspace(min(j.min()), max(j.max()), 10, dtype="int"))
                 else:
-                    for i in j.columns:
-                        plt.plot(j.index, j[i], label=i)
-                    plt.grid()
-                    plt.legend()
-                    plt.ylabel("Euros")
-                    plt.xlabel("Tiempo")
-                    if self.options_data["Axis"] == 3:
-                        plt.xticks(j.index)
-                        plt.yticks(np.linspace(min(j.min()), max(j.max()), 20, dtype="int"))
-                    elif self.options_data["Axis"] == 2:
-                        plt.xticks(j.index[::2])
-                        plt.yticks(np.linspace(min(j.min()), max(j.max()), 10, dtype="int"))
-                    else:
-                        plt.xticks(j.index[::4])
-                        plt.yticks(np.linspace(min(j.min()), max(j.max()), 5, dtype="int"))
-                    plt.title("Seguimiento de Capitales")
-                    plt.show()
+                    plt.xticks(j.index[::4])
+                    plt.yticks(np.linspace(min(j.min()), max(j.max()), 5, dtype="int"))
+                plt.title("Seguimiento de Capitales")
+                plt.show()
                 for _ in range(15):
                         print(self.e)
                 input(self.oli.rjust(round(self.width / 2) + 15))
@@ -943,7 +943,7 @@ class App:
             self.rounddf()
             self.record = self.record.convert_dtypes()
             self.record.to_pickle("record.pkl")
-            np.save("cuantities.npy", self.cuantities)
+            #np.save("cuantities.npy", self.cuantities)
         os.system("cls")
 
     def outro(self):
@@ -967,7 +967,7 @@ class App:
         os.system("cls")
 
     def run(self):
-        self.init_patrimonio()
+        #self.init_patrimonio()
         while self.state != 0:
             self.main_page()
             if self.ask.lower() == "a":
