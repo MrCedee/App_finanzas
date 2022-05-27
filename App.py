@@ -944,7 +944,7 @@ class App:
         if t.lower() == "y":
             self.rounddf()
             self.record = self.record.convert_dtypes()
-            self.record.to_pickle("record.pkl")
+            self.record.to_pickle("record_p.pkl")
             #np.save("cuantities.npy", self.cuantities)
         os.system("cls")
 
